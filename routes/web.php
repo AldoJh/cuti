@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PengajuanCutiController;
 
 // Halaman Publik (tanpa login)
 Route::get('/', function () {
@@ -19,4 +20,11 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // Dashboard setelah login
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
+
+// Rute untuk pengajuan cuti
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cuti/create', [PengajuanCutiController::class, 'create'])->name('cuti.create');
+    Route::post('/cuti', [PengajuanCutiController::class, 'store'])->name('cuti.store')->middleware('auth');
+    Route::get('/lihat', [PengajuanCutiController::class, 'show'])->name('cuti.index');
 });
