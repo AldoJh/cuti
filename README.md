@@ -1,18 +1,19 @@
-# 🏛️ Sistem Pengajuan Cuti - Pengadilan Lhokseumawe
+# SISTNK Website
 
-Aplikasi web berbasis **Laravel 12** dengan template **Stisla** untuk mengelola proses pengajuan cuti pegawai secara bertahap berdasarkan jabatan.  
-Mendukung **approval berjenjang**, **dashboard role-based**, dan **export PDF surat cuti** dengan tanda tangan digital.
+## Installation
 
----
+1. Clone this repository.
+2. Install the dependencies. Run `composer install` command.
+3. Create `.env` file by simply copying the `.env.example` file and rename it.
+4. Configure the `.env` file with your **database connection**, **seeder configuration**, etc.
+5. Generate the application key with `php artisan key:generate` command.
+6. Generate the storage link with `php artisan storage:link` command.
+7. Generate the database structure with this commands based on your preferences:
+    - Use **`php artisan migrate`** for [creating / updating the database](https://laravel.com/docs/10.x/migrations).
+    - Use **`php artisan db:seed`** for [seeding the database](https://laravel.com/docs/10.x/seeding#running-seeders).
+    - Use `php artisan migrate:fresh` for fresh installation.
+    - Use `php artisan migrate:fresh --seed` for fresh installation and seeding the database.
 
-## ✨ Fitur Utama
-- 🔐 **Login & Autentikasi** dengan role: `pegawai`, `atasan`, `ketua`, `admin`
-- 📊 **Dashboard** sesuai peran
-- 📝 **Form Pengajuan Cuti** (pegawai)
-- ✅ **Approval** berjenjang (atasan → ketua)
-- 📑 **Cetak PDF Surat Cuti** (admin)
-- 🎨 UI menggunakan **Stisla Template**
+> **Warning!** If you use `php artisan migrate:fresh` command, all tables will be dropped and recreated. **All data in the tables will be lost**.
 
----
-
-## 🗂️ Struktur Views
+7. Finally, start the application with `php artisan serve` command.
