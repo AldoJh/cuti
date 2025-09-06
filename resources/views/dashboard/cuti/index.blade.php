@@ -22,7 +22,7 @@
         @if($cuti->jenis_cuti === 'sakit' && $cuti->surat_sakit)
             <p><strong>Surat Cuti Sakit:</strong> 
                 <a href="{{ asset('storage/' . $cuti->surat_sakit) }}" target="_blank">
-                    Lihat/Download
+                    Lihat
                 </a>
             </p>
         @endif
