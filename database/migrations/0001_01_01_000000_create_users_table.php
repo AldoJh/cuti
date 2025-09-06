@@ -29,6 +29,7 @@ return new class extends Migration
             ])->default('pegawai'); // Role untuk akses sistem
             $table->unsignedBigInteger('atasan_id')->nullable();
             $table->foreign('atasan_id')->references('id')->on('users')->onDelete('set null');
+            $table->integer('sisa_cuti_tahun_lalu')->default(0);
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

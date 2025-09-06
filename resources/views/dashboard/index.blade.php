@@ -9,6 +9,12 @@
   <p>Selamat datang, {{ Auth::user()->name }} 👋</p>
   <p>Silakan pilih menu pengajuan cuti atau persetujuan cuti.</p>
 </div>
+@if(!in_array(Auth::user()->role, ['admin']))
+    <div>
+      <h4>Sisa Cuti Tahunan: {{ $sisaCutiTahunan }} hari</h4>
+      <h4>Sisa Cuti Sakit: {{ $sisaCutiSakit }} hari</h4>
+    </div>
+  @endif
 @endsection
 
 @section('scripts')

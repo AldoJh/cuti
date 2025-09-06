@@ -20,6 +20,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // Dashboard setelah login
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/all_cuti', [DashboardController::class, 'all_cuti'])->name('all_cuti');
 });
 
 // Rute untuk pengajuan cuti
