@@ -20,7 +20,8 @@ $rolesAdmin = ['admin', 'superadmin'];
     @endif
     @if(in_array(auth()->user()->role, $rolesAdmin))
         <li><a class="nav-link" href="{{ route('all_cuti') }}"><i class="fas fa-file-alt"></i> <span>Semua Sisa Cuti</span></a></li>
-        {{-- <li><a class="nav-link" href="{{ route('cuti.sisa') }}"><i class="fas fa-file-alt"></i> <span>Sisa Cuti Pegawai</span></a></li> --}}
+        <li><a class="nav-link" href="{{ route('create-user') }}"><i class="fas fa-file-alt"></i> <span>Buat Akun Pegawai</span></a></li>
+        <li><a class="nav-link" href="{{ route('get-all-user') }}"><i class="fas fa-file-alt"></i> <span>Data User</span></a></li>
     @endif
       </ul>
     </aside>
