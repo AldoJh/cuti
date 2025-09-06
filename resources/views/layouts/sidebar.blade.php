@@ -8,6 +8,13 @@
         <li><a class="nav-link" href="{{ route('dashboard') }}"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
         <li><a class="nav-link" href="{{ route('cuti.create') }}"><i class="fas fa-file-alt"></i> <span>Pengajuan Cuti</span></a></li>
         <li><a class="nav-link" href="{{ route('cuti.index') }}"><i class="fas fa-file-alt"></i> <span>lihat Pengajuan Cuti</span></a></li>
+        @php
+        $rolesAtasan = ['panitera',  'sekretaris', 'ketua'];
+    @endphp
+    
+    @if(in_array(auth()->user()->role, $rolesAtasan))
+        <li><a class="nav-link" href="{{ route('cuti.pengajuan', auth()->id()) }}"><i class="fas fa-file-alt"></i> <span>Pengajuan Cuti Masuk</span></a></li>
+    @endif
       </ul>
     </aside>
   </div>

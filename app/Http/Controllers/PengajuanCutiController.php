@@ -45,14 +45,19 @@ class PengajuanCutiController extends Controller
             $suratPath = $request->file('surat_sakit')->store('surat_cuti', 'public');
         }
 
-            Pengajuan_Cuti::create([
-                'user_id' => Auth::id(),
-                'jenis_cuti' => $request->jenis_cuti,
-                'tanggal_mulai' => $request->tanggal_mulai,
-                'tanggal_selesai' => $request->tanggal_selesai,
-                'alasan' => $request->alasan,
-                'surat_sakit' => $suratPath, // menyimpan path file
-            ]);
+                $user = Auth::user();
+                $currentApproval = $user->atasan_id ?? null;
+
+                $cuti = Pengajuan_Cuti::create([
+                    'user_id' => $user->id,
+                    'jenis_cuti' => $request->jenis_cuti,
+                    'tanggal_mulai' => $request->tanggal_mulai,
+                    'tanggal_selesai' => $request->tanggal_selesai,
+                    'alasan' => $request->alasan,
+                    'surat_sakit' => $suratPath,
+                    'current_approval_id' => $currentApproval, 
+                    'status' => 'diajukan',
+                ]);
 
             return redirect()->route('dashboard')->with('success', 'Pengajuan cuti berhasil diajukan.');
             
@@ -93,5 +98,48 @@ class PengajuanCutiController extends Controller
     public function destroy(pengajuan_cuti $pengajuan_cuti)
     {
         //
+    }
+
+    public function approve($id)
+    {
+        $cuti = Pengajuan_Cuti::findOrFail($id);
+    $user = auth()->user();
+
+    
+    if ($cuti->current_approval_id != $user->id) {
+        return redirect()->back()->with('error', 'Anda tidak memiliki hak untuk menyetujui cuti ini.');
+    }
+
+    
+    if ($user->atasan_id) {
+        // Lanjutkan ke atasan berikutnya
+        $cuti->current_approval_id = $user->atasan_id;
+        $cuti->status = 'diajukan'; 
+    } else {
+        
+        $cuti->current_approval_id = null;
+        $cuti->status = 'disetujui';
+    }
+
+    $cuti->save();
+
+    return redirect()->back()->with('success', 'Pengajuan cuti telah disetujui.');
+    }
+
+    public function pengajuan($id)
+    {
+        $user = auth()->user();
+
+    
+    if ($user->id != $id) {
+        abort(403, 'Akses ditolak.');
+    }
+
+    // Ambil semua pengajuan cuti yang saat ini harus disetujui oleh user ini
+    $pengajuanCuti = Pengajuan_Cuti::where('current_approval_id', $user->id)
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+
+    return view('dashboard.cuti.pengajuan', compact('pengajuanCuti', 'user'));
     }
 }

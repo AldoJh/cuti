@@ -18,6 +18,7 @@ class pengajuan_cuti extends Model
         'alasan',
         'surat_sakit',
         'status',
+        'current_approval_id',
     ];
 
     public function user()
