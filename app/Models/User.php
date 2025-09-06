@@ -22,6 +22,10 @@ class User extends Authenticatable
         'email',
         'password',
         'atasan_id',
+        'ttd_path',
+        'role',
+        'nip',
+        'jabatan',
     ];
 
     /**
@@ -46,4 +50,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function atasan()
+{
+    return $this->belongsTo(User::class, 'atasan_id');
+}
 }

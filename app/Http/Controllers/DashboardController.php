@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pengajuan_Cuti;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class DashboardController extends Controller
 {
@@ -80,5 +82,61 @@ class DashboardController extends Controller
 
     return view('dashboard.all_cuti', compact('cutiData'));
 }
+
+    public function store_user(request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'nip' => 'nullable|string|max:50',
+            'jabatan' => 'nullable|string|max:100',
+            'role' => 'required|in:admin,ketua,hakim,panitera,panmud,panitera_pengganti,sekretaris,kasubbag,pegawai',
+            'atasan_id' => 'nullable|exists:users,id',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+            'ttd' => 'nullable|image|mimes:png,jpg,jpeg|max:2048', // untuk tanda tangan
+        ]);
+    
+        $ttdPath = null;
+        if ($request->hasFile('ttd')) {
+            $ttdPath = $request->file('ttd')->store('ttd', 'public');
+        }
+    
+        $user = User::create([
+            'name' => $request->name,
+            'nip' => $request->nip,
+            'jabatan' => $request->jabatan,
+            'role' => $request->role,
+            'atasan_id' => $request->atasan_id,
+            'sisa_cuti_tahun_lalu' => 0,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'ttd_path' => $ttdPath,
+        ]);
+    
+        return redirect()->back()->with('success', 'User berhasil dibuat!');    
+    }
+
+    public function create_user()
+    {
+        $user = Auth::user();
+        if ($user->role !== 'admin') {
+            return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses halaman ini.');
+        }else{
+            $users = User::all();
+            return view('dashboard.create_user', compact('users') );
+        }
+    }
+
+    public function getalluser()
+    {
+        $user = Auth::user();
+        if ($user->role !== 'admin') {
+            return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses halaman ini.');
+        }else{
+            $users = User::all();
+            return view('dashboard.all_user', compact('users') );
+        }
+        
+    }
 
 }
