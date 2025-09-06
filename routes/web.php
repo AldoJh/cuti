@@ -27,4 +27,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/cuti/create', [PengajuanCutiController::class, 'create'])->name('cuti.create');
     Route::post('/cuti', [PengajuanCutiController::class, 'store'])->name('cuti.store')->middleware('auth');
     Route::get('/lihat', [PengajuanCutiController::class, 'show'])->name('cuti.index');
+    Route::get('/cuti/pengajuan/{id}', [PengajuanCutiController::class, 'pengajuan'])->name('cuti.pengajuan');
+    Route::post('/cuti/pengajuan/{id}/approve', [PengajuanCutiController::class, 'approve'])->name('cuti.approve');
 });

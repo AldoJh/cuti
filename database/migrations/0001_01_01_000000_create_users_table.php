@@ -16,7 +16,19 @@ return new class extends Migration
             $table->string('name');
             $table->string('nip')->nullable(); // NIP pegawai
             $table->string('jabatan')->nullable(); // Jabatan resmi
-            $table->enum('role', ['pegawai', 'atasan', 'ketua', 'admin'])->default('pegawai'); // Role untuk akses sistem
+            $table->enum('role', [
+                'admin',          // untuk akses penuh sistem
+                'ketua',          // Ketua Pengadilan
+                'hakim',          // Hakim
+                'panitera',       // Panitera
+                'panmud',         // Panitera Muda
+                'panitera_pengganti', // Panitera Pengganti
+                'sekretaris',     // Sekretaris
+                'kasubbag',       // Kepala Sub Bagian
+                'pegawai'         // pegawai biasa atau staf
+            ])->default('pegawai'); // Role untuk akses sistem
+            $table->unsignedBigInteger('atasan_id')->nullable();
+            $table->foreign('atasan_id')->references('id')->on('users')->onDelete('set null');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

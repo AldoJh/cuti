@@ -19,7 +19,8 @@ return new class extends Migration
             $table->date('tanggal_selesai');
             $table->text('alasan');
             $table->string('surat_sakit')->nullable();
-            $table->enum('status', ['diajukan', 'disetujui_atasan', 'disetujui_ketua', 'ditolak'])->default('diajukan');
+            $table->foreignId('current_approval_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->enum('status', ['diajukan', 'disetujui', 'ditolak'])->default('diajukan');
             $table->timestamps();
         });
     }
