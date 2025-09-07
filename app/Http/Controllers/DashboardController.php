@@ -93,7 +93,11 @@ class DashboardController extends Controller
             'atasan_id' => 'nullable|exists:users,id',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'ttd' => 'nullable|image|mimes:png,jpg,jpeg|max:2048', // untuk tanda tangan
+            'ttd' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+            'unit_kerja' => 'nullable|string|max:100',
+            'no_telp' => 'nullable|string|max:20',
+            'golongan' => 'nullable|string|max:10',
+            'tanggal_masuk' => 'nullable|date',
         ]);
     
         $ttdPath = null;
@@ -104,13 +108,17 @@ class DashboardController extends Controller
         $user = User::create([
             'name' => $request->name,
             'nip' => $request->nip,
-            'jabatan' => $request->jabatan,
+            'jabatan' => $request->role,
             'role' => $request->role,
             'atasan_id' => $request->atasan_id,
             'sisa_cuti_tahun_lalu' => 0,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'ttd_path' => $ttdPath,
+            'unit_kerja' => $request->unit_kerja,
+            'no_telp' => $request->no_telp,
+            'golongan' => $request->golongan,
+            'tanggal_masuk' => $request->tanggal_masuk,
         ]);
     
         return redirect()->back()->with('success', 'User berhasil dibuat!');    
@@ -122,7 +130,8 @@ class DashboardController extends Controller
         if ($user->role !== 'admin') {
             return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses halaman ini.');
         }else{
-            $users = User::all();
+            $users = User::where('role', '!=', 'admin')->get();
+            // dd($users);
             return view('dashboard.create_user', compact('users') );
         }
     }

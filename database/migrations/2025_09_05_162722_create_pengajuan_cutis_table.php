@@ -14,15 +14,15 @@ return new class extends Migration
         Schema::create('pengajuan_cutis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->enum('jenis_cuti', ['tahunan', 'sakit']);
+            $table->enum('jenis_cuti', ['tahunan', 'sakit', 'alasan_penting', 'besar', 'melahirkan', 'cltn']);
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->text('alasan');
             $table->string('surat_sakit')->nullable();
             $table->foreignId('current_approval_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->enum('status', ['diajukan', 'disetujui', 'ditolak'])->default('diajukan');
+            $table->enum('status', ['diajukan','disetujui_atasan', 'disetujui', 'ditolak'])->default('diajukan');
             $table->timestamps();
-        });
+        }); 
     }
 
     /**

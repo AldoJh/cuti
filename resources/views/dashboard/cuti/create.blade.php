@@ -20,6 +20,10 @@
             <option value="">-- Pilih --</option>
             <option value="tahunan">Cuti Tahunan</option>
             <option value="sakit">Cuti Sakit</option>
+            <option value="besar">Cuti Besar</option>
+            <option value="melahirkan">Cuti Melahirkan</option>
+            <option value="alasan_penting">Cuti Alasan Penting</option>
+            <option value="cltn">Cuti LTN (Luar Tanggungan Negara)</option>
           </select>
         </div>
 

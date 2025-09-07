@@ -6,6 +6,9 @@ use App\Models\pengajuan_cuti;
 use App\Http\Requests\Storepengajuan_cutiRequest;
 use App\Http\Requests\Updatepengajuan_cutiRequest;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB; 
+use App\Models\User;
 
 class PengajuanCutiController extends Controller
 {
@@ -22,6 +25,7 @@ class PengajuanCutiController extends Controller
      */
     public function create()
     {
+        
         return view('dashboard.cuti.create');
         return true;
     }
@@ -30,43 +34,44 @@ class PengajuanCutiController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Storepengajuan_cutiRequest $request)
-    {
-        $request->validate([
-            'jenis_cuti' => 'required|in:tahunan,sakit',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'alasan' => 'required|string',
-            'surat_sakit' => 'required_if:jenis_cuti,sakit|file|mimes:pdf,jpg,jpeg,png|max:2048',
-        ]);
+{
+    $request->validate([
+        'jenis_cuti' => 'required|in:tahunan,sakit,alasan_penting,besar,melahirkan,cltn',
+        'tanggal_mulai' => 'required|date',
+        'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+        'alasan' => 'required|string',
+        'surat_sakit' => 'required_if:jenis_cuti,sakit|file|mimes:pdf,jpg,jpeg,png|max:2048',
+    ]);
 
-        $suratPath = null;
-        if ($request->hasFile('surat_sakit')) {
-            $suratPath = $request->file('surat_sakit')->store('surat_cuti', 'public');
-        }
+    $suratPath = null;
+    if ($request->hasFile('surat_sakit')) {
+        $suratPath = $request->file('surat_sakit')->store('surat_cuti', 'public');
+    }
 
-        $user = Auth::user();
-        $currentApproval = $user->atasan_id ?? null;
+    $user = Auth::user();
+    $currentApproval = $user->atasan_id ?? null;
 
-        $hariCuti = Carbon\Carbon::parse($request->tanggal_selesai)
-                    ->diffInDays(Carbon\Carbon::parse($request->tanggal_mulai)) + 1;
+    $hariCuti = Carbon::parse($request->tanggal_selesai)
+                ->diffInDays(Carbon::parse($request->tanggal_mulai)) + 1;
 
-        if ($request->jenis_cuti === 'tahunan') {
-            // Ambil total cuti tahunan tahun ini
+    switch ($request->jenis_cuti) {
+        case 'tahunan':
+            // Kuota cuti tahunan
             $totalTahunan = Pengajuan_Cuti::where('user_id', $user->id)
                 ->where('jenis_cuti', 'tahunan')
                 ->whereYear('tanggal_mulai', now()->year)
                 ->sum(DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
 
-            // Ambil sisa cuti tahun sebelumnya
-            $sisaCutiLalu = min($user->sisa_cuti_tahun_lalu ?? 0, 6); // atau 24 jika ditangguhkan
+            $sisaCutiLalu = min($user->sisa_cuti_tahun_lalu ?? 0, 6);
             $kuotaTahunan = 12 + $sisaCutiLalu;
 
             if (($totalTahunan + $hariCuti) > $kuotaTahunan) {
-                return redirect()->back()->with('error', 'Kuota cuti tahunan Anda melebihi batas.');
+                return back()->with('error', 'Kuota cuti tahunan Anda melebihi batas.');
             }
-        }
+            break;
 
-        if ($request->jenis_cuti === 'sakit') {
+        case 'sakit':
+            // Kuota cuti sakit (standar: 14 hari, keguguran: 45 hari)
             $totalSakit = Pengajuan_Cuti::where('user_id', $user->id)
                 ->where('jenis_cuti', 'sakit')
                 ->whereYear('tanggal_mulai', now()->year)
@@ -75,23 +80,61 @@ class PengajuanCutiController extends Controller
             $kuotaSakit = ($request->alasan === 'gugur_kandungan') ? 45 : 14;
 
             if (($totalSakit + $hariCuti) > $kuotaSakit) {
-                return redirect()->back()->with('error', 'Kuota cuti sakit Anda melebihi batas.');
+                return back()->with('error', 'Kuota cuti sakit Anda melebihi batas.');
             }
-        }
+            break;
 
-        $cuti = Pengajuan_Cuti::create([
-            'user_id' => $user->id,
-            'jenis_cuti' => $request->jenis_cuti,
-            'tanggal_mulai' => $request->tanggal_mulai,
-            'tanggal_selesai' => $request->tanggal_selesai,
-            'alasan' => $request->alasan,
-            'surat_sakit' => $suratPath,
-            'current_approval_id' => $currentApproval, 
-            'status' => 'diajukan',
-        ]);
+        case 'alasan_penting':
+            // Cuti karena alasan penting max 1 bulan
+            if ($hariCuti > 30) {
+                return back()->with('error', 'Cuti karena alasan penting maksimal 1 bulan.');
+            }
+            break;
 
-        return redirect()->route('dashboard')->with('success', 'Pengajuan cuti berhasil diajukan.');
+        case 'besar':
+            // Cuti besar max 3 bulan, 1 kali dalam 5 tahun
+            if ($hariCuti > 90) {
+                return back()->with('error', 'Cuti besar maksimal 3 bulan.');
+            }
+
+            $lastCutiBesar = Pengajuan_Cuti::where('user_id', $user->id)
+                ->where('jenis_cuti', 'besar')
+                ->where('tanggal_mulai', '>=', now()->subYears(5))
+                ->exists();
+
+            if ($lastCutiBesar) {
+                return back()->with('error', 'Cuti besar hanya bisa diambil sekali dalam 5 tahun.');
+            }
+            break;
+
+        case 'melahirkan':
+            // Cuti melahirkan max 3 bulan
+            if ($hariCuti > 90) {
+                return back()->with('error', 'Cuti melahirkan maksimal 3 bulan.');
+            }
+            break;
+
+        case 'cltn':
+            // CLTN maksimal 3 tahun (1095 hari), dapat diperpanjang 1 tahun (365 hari)
+            if ($hariCuti > 1460) {
+                return back()->with('error', 'Cuti di luar tanggungan negara maksimal 3 tahun (dapat diperpanjang 1 tahun).');
+            }
+            break;
     }
+
+    $cuti = Pengajuan_Cuti::create([
+        'user_id' => $user->id,
+        'jenis_cuti' => $request->jenis_cuti,
+        'tanggal_mulai' => $request->tanggal_mulai,
+        'tanggal_selesai' => $request->tanggal_selesai,
+        'alasan' => $request->alasan,
+        'surat_sakit' => $suratPath,
+        'current_approval_id' => $currentApproval, 
+        'status' => 'diajukan',
+    ]);
+
+    return redirect()->route('dashboard')->with('success', 'Pengajuan cuti berhasil diajukan.');
+}
 
 
     /**
@@ -140,15 +183,22 @@ class PengajuanCutiController extends Controller
                 return redirect()->back()->with('error', 'Anda tidak memiliki hak untuk menyetujui cuti ini.');
             }
 
-            if ($user->atasan_id) {
-                // Lanjutkan ke atasan berikutnya
+            if ($user->role === 'ketua') {
+                // Kalau ketua yang approve -> final
+                $cuti->current_approval_id = null;
+                $cuti->status = 'disetujui';
+            } elseif ($user->atasan_id) {
+                // Kalau masih ada atasan -> teruskan
                 $cuti->current_approval_id = $user->atasan_id;
-                $cuti->status = 'diajukan'; 
+                $cuti->status = 'disetujui_atasan';
             } else {
-                // Tidak ada atasan, langsung disetujui
+                // Kalau tidak ada atasan -> final
                 $cuti->current_approval_id = null;
                 $cuti->status = 'disetujui';
             }
+            
+            
+            
 
             $cuti->save();
 

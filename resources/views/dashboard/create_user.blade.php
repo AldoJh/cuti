@@ -32,19 +32,43 @@
 
         <div class="mb-3">
             <label for="nip">NIP</label>
-            <input type="number" name="nip" class="form-control" value="{{ old('nip') }}">
+            <input type="text" name="nip" class="form-control" value="{{ old('nip') }}">
+        </div>
+
+        {{-- <div class="mb-3">
+            <label for="jabatan">Jabatan</label>
+            <input type="text" name="jabatan" class="form-control" value="{{ old('jabatan') }}">
+        </div> --}}
+
+        <div class="mb-3">
+            <label for="unit_kerja">Unit Kerja</label>
+            <input type="text" name="unit_kerja" class="form-control" value="{{ old('unit_kerja') }}">
         </div>
 
         <div class="mb-3">
-            <label for="jabatan">Jabatan</label>
-            <input type="text" name="jabatan" class="form-control" value="{{ old('jabatan') }}">
+            <label for="no_telp">No. Telepon</label>
+            <input type="text" name="no_telp" class="form-control" value="{{ old('no_telp') }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="golongan">Golongan</label>
+            <input type="text" name="golongan" class="form-control" value="{{ old('golongan') }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="tanggal_masuk">Tanggal Masuk</label>
+            <input type="date" name="tanggal_masuk" class="form-control" value="{{ old('tanggal_masuk') }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="sisa_cuti_tahun_lalu">Sisa Cuti Tahun Lalu</label>
+            <input type="number" name="sisa_cuti_tahun_lalu" class="form-control" value="{{ old('sisa_cuti_tahun_lalu', 0) }}">
         </div>
 
         <div class="mb-3">
             <label for="role">Role</label>
             <select name="role" class="form-control" required>
                 <option value="">-- Pilih Role --</option>
-                <option value="admin">Admin</option>
                 <option value="ketua">Ketua</option>
                 <option value="hakim">Hakim</option>
                 <option value="panitera">Panitera</option>
@@ -61,10 +85,13 @@
             <select name="atasan_id" class="form-control">
                 <option value="">-- Pilih Atasan --</option>
                 @foreach($users as $u)
-                    <option value="{{ $u->id }}">{{ $u->name }} ({{ $u->jabatan }})</option>
+                    <option value="{{ $u->id }}" {{ old('atasan_id') == $u->id ? 'selected' : '' }}>
+                        {{ $u->name }} ({{ $u->jabatan }})
+                    </option>
                 @endforeach
             </select>
         </div>
+        
 
         <div class="mb-3">
             <label for="email">Email</label>
@@ -82,7 +109,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="ttd">Tanda Tangan (TTD)</label>
+            <label for="ttd_path">Tanda Tangan (TTD)</label>
             <input type="file" name="ttd" class="form-control" accept="image/*">
         </div>
 
