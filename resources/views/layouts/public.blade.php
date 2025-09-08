@@ -2,39 +2,34 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ config('app.name', 'Pengajuan Cuti') }}</title>
-  <link rel="stylesheet" href="{{ asset('stisla/assets/modules/bootstrap/css/bootstrap.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('stisla/assets/modules/fontawesome/css/all.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('stisla/assets/css/style.css') }}">
-  <link rel="stylesheet" href="{{ asset('stisla/assets/css/components.css') }}">
+  @vite('resources/css/app.css') {{-- pastikan Tailwind aktif --}}
 </head>
-<body>
-  <div id="app">
-    <div class="main-wrapper">
-      
-      {{-- Navbar Publik --}}
-      <nav class="navbar navbar-expand-lg main-navbar">
-        <a href="{{ route('home') }}" class="navbar-brand">Cuti Online</a>
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a href="{{ route('login') }}" class="btn btn-primary btn-sm">Login</a>
-          </li>
-        </ul>
-      </nav>
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
-      {{-- Konten --}}
-      <div class="main-content">
-        @yield('content')
-      </div>
+  {{-- Navbar --}}
+  <nav class="bg-blue-700 text-white flex justify-between items-center px-6 py-3 shadow-md">
+    <a href="{{ route('home') }}" class="flex items-center space-x-2">
+      <img src="{{ asset('images/logo.jpg') }}" alt="Logo" class="h-8 w-8 object-cover rounded-full">
+      <span class="font-bold text-lg">Cuti Online</span>
+    </a>
+    <a href="{{ route('login') }}" class="bg-white text-blue-700 font-semibold px-4 py-2 rounded-lg shadow hover:bg-gray-100 transition duration-200">
+      Login
+    </a>
+  </nav>
 
-      <footer class="main-footer">
-        <div class="footer-left">
-          &copy; {{ date('Y') }} Pengadilan Lhokseumawe
-        </div>
-      </footer>
-
+  {{-- Konten --}}
+  <main class="flex-grow flex items-center justify-center px-4 py-12">
+    <div class="bg-white shadow-lg rounded-xl p-8 max-w-xl w-full text-center">
+      @yield('content')
     </div>
-  </div>
+  </main>
+
+  {{-- Footer --}}
+  <footer class="bg-white text-gray-500 text-sm text-center p-4 shadow-inner">
+    &copy; {{ date('Y') }} Pengadilan Lhokseumawe - Sistem Cuti
+  </footer>
+
 </body>
 </html>

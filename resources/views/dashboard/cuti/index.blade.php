@@ -1,38 +1,28 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="section-header">
-    <h1>Detail Pengajuan Cuti</h1>
-</div>
+<div class="p-6">
+    <h1 class="text-2xl font-semibold text-gray-800 mb-4">Detail Pengajuan Cuti</h1>
 
-<div class="section-body">
-    <div class="card">
-        <div class="card-header">
-            <h4>Pengajuan Cuti {{ $user->name }}</h4>
+    <div class="space-y-4">
+        @foreach($cuti as $c)
+        <div class="bg-white shadow rounded-lg p-4 border-l-4 border-blue-500">
+            <p><strong>Jenis Cuti:</strong> {{ $c->jenis_cuti }}</p>
+            <p><strong>Tanggal Mulai:</strong> {{ $c->tanggal_mulai }}</p>
+            <p><strong>Tanggal Selesai:</strong> {{ $c->tanggal_selesai }}</p>
+            <p><strong>Alasan:</strong> {{ $c->alasan }}</p>
+            <p><strong>Status:</strong> {{ ucfirst(str_replace('_', ' ', $c->status)) }}</p>
+            @if($c->jenis_cuti === 'sakit' && $c->surat_sakit)
+                <p><strong>Surat Cuti Sakit:</strong> 
+                    <a href="{{ asset('storage/' . $c->surat_sakit) }}" target="_blank" class="text-blue-500 hover:underline">Lihat</a>
+                </p>
+            @endif
         </div>
-        @foreach($cuti as $cuti)
-<div class="card mb-3">
-    <div class="card-body">
-        <p><strong>Jenis Cuti:</strong> {{ $cuti->jenis_cuti }}</p>
-        <p><strong>Tanggal Mulai:</strong> {{ $cuti->tanggal_mulai }}</p>
-        <p><strong>Tanggal Selesai:</strong> {{ $cuti->tanggal_selesai }}</p>
-        <p><strong>Alasan:</strong> {{ $cuti->alasan }}</p>
-        <p><strong>Status:</strong> {{ ucfirst(str_replace('_', ' ', $cuti->status)) }}</p>
-
-        @if($cuti->jenis_cuti === 'sakit' && $cuti->surat_sakit)
-            <p><strong>Surat Cuti Sakit:</strong> 
-                <a href="{{ asset('storage/' . $cuti->surat_sakit) }}" target="_blank">
-                    Lihat
-                </a>
-            </p>
-        @endif
+        @endforeach
     </div>
-</div>
-@endforeach
 
-        <div class="card-footer">
-            <a href="{{ route('dashboard') }}" class="btn btn-secondary">Kembali</a>
-        </div>
+    <div class="mt-4">
+        <a href="{{ route('dashboard') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md transition">Kembali</a>
     </div>
 </div>
 @endsection

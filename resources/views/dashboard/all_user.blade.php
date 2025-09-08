@@ -1,67 +1,51 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h2 class="mb-3">Daftar User</h2>
-
-    {{-- Pesan sukses atau error --}}
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-    @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
-
-    <div class="mb-3">
-        <a href="{{ route('create-user') }}" class="btn btn-primary">+ Tambah User</a>
+<div class="p-6">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold text-gray-800">Daftar User</h2>
+        <a href="{{ route('create-user') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm transition">+ Tambah User</a>
     </div>
 
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Nama</th>
-                <th>NIP</th>
-                <th>Jabatan</th>
-                <th>Role</th>
-                <th>Atasan</th>
-                <th>Email</th>
-                <th>TTD</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($users as $key => $u)
+    <div class="overflow-x-auto bg-white rounded-lg shadow">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
                 <tr>
-                    <td>{{ $key+1 }}</td>
-                    <td>{{ $u->name }}</td>
-                    <td>{{ $u->nip ?? '-' }}</td>
-                    <td>{{ $u->jabatan ?? '-' }}</td>
-                    <td>{{ ucfirst($u->role) }}</td>
-                    <td>{{ $u->atasan?->name ?? '-' }}</td>
-                    <td>{{ $u->email }}</td>
-                    <td>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">#</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Nama</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">NIP</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Jabatan</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Role</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Atasan</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Email</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">TTD</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @forelse($users as $key => $u)
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2">{{ $key+1 }}</td>
+                    <td class="px-4 py-2">{{ $u->name }}</td>
+                    <td class="px-4 py-2">{{ $u->nip ?? '-' }}</td>
+                    <td class="px-4 py-2">{{ $u->jabatan ?? '-' }}</td>
+                    <td class="px-4 py-2">{{ ucfirst($u->role) }}</td>
+                    <td class="px-4 py-2">{{ $u->atasan?->name ?? '-' }}</td>
+                    <td class="px-4 py-2">{{ $u->email }}</td>
+                    <td class="px-4 py-2">
                         @if($u->ttd_path)
-                            <img src="{{ asset('storage/'.$u->ttd_path) }}" alt="TTD" height="40">
+                            <img src="{{ asset('storage/'.$u->ttd_path) }}" alt="TTD" class="h-10">
                         @else
-                            <span class="text-muted">Belum ada</span>
+                            <span class="text-gray-400">Belum ada</span>
                         @endif
                     </td>
-                    <td>
-                        {{-- <a href="{{ route('users.edit', $u->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                        <form action="{{ route('users.delete', $u->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus user ini?')">Hapus</button>
-                        </form> --}}
-                    </td>
                 </tr>
-            @empty
+                @empty
                 <tr>
-                    <td colspan="9" class="text-center">Tidak ada user ditemukan</td>
+                    <td colspan="8" class="text-center px-4 py-2 text-gray-500">Tidak ada user ditemukan</td>
                 </tr>
-            @endforelse
-        </tbody>
-    </table>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 @endsection
