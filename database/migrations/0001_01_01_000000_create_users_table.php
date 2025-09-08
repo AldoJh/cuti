@@ -15,7 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('nip')->nullable(); // NIP pegawai
-            $table->string('jabatan')->nullable(); // Jabatan resmi
+            $table->string('jabatan')->nullable();
+            $table->string('unit_kerja')->nullable();
+            $table->string('no_telp')->nullable();
+            $table->string('golongan')->nullable();
+            $table->date('tanggal_masuk')->nullable();
             $table->enum('role', [
                 'admin',          // untuk akses penuh sistem
                 'ketua',          // Ketua Pengadilan

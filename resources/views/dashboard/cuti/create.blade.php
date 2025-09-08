@@ -7,13 +7,23 @@
     <form action="{{ route('cuti.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
         @csrf
 
-        <div>
-            <label for="jenis_cuti" class="block text-gray-700 font-medium mb-1">Jenis Cuti</label>
-            <select name="jenis_cuti" id="jenis_cuti" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                <option value="">-- Pilih --</option>
-                <option value="tahunan">Cuti Tahunan</option>
-                <option value="sakit">Cuti Sakit</option>
-            </select>
+
+        <div class="form-group">
+          <label>Jenis Cuti</label>
+          <select name="jenis_cuti" id="jenis_cuti" class="form-control" required>
+            <option value="">-- Pilih --</option>
+            <option value="tahunan">Cuti Tahunan</option>
+            <option value="sakit">Cuti Sakit</option>
+            <option value="besar">Cuti Besar</option>
+            <option value="melahirkan">Cuti Melahirkan</option>
+            <option value="alasan_penting">Cuti Alasan Penting</option>
+            <option value="cltn">Cuti LTN (Luar Tanggungan Negara)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Tanggal Mulai</label>
+          <input type="date" name="tanggal_mulai" class="form-control" required>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

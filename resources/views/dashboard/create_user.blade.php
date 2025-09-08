@@ -29,22 +29,46 @@
             <label for="name" class="block text-gray-700 font-medium mb-1">Nama</label>
             <input type="text" name="name" id="name" value="{{ old('name') }}" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
         </div>
-
-        <div>
-            <label for="nip" class="block text-gray-700 font-medium mb-1">NIP</label>
-            <input type="number" name="nip" id="nip" value="{{ old('nip') }}" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <div class="mb-3">
+            <label for="nip">NIP</label>
+            <input type="text" name="nip" class="form-control" value="{{ old('nip') }}">
         </div>
 
-        <div>
-            <label for="jabatan" class="block text-gray-700 font-medium mb-1">Jabatan</label>
-            <input type="text" name="jabatan" id="jabatan" value="{{ old('jabatan') }}" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+        {{-- <div class="mb-3">
+            <label for="jabatan">Jabatan</label>
+            <input type="text" name="jabatan" class="form-control" value="{{ old('jabatan') }}">
+        </div> --}}
+
+        <div class="mb-3">
+            <label for="unit_kerja">Unit Kerja</label>
+            <input type="text" name="unit_kerja" class="form-control" value="{{ old('unit_kerja') }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="no_telp">No. Telepon</label>
+            <input type="text" name="no_telp" class="form-control" value="{{ old('no_telp') }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="golongan">Golongan</label>
+            <input type="text" name="golongan" class="form-control" value="{{ old('golongan') }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="tanggal_masuk">Tanggal Masuk</label>
+            <input type="date" name="tanggal_masuk" class="form-control" value="{{ old('tanggal_masuk') }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="sisa_cuti_tahun_lalu">Sisa Cuti Tahun Lalu</label>
+            <input type="number" name="sisa_cuti_tahun_lalu" class="form-control" value="{{ old('sisa_cuti_tahun_lalu', 0) }}">
+
         </div>
 
         <div>
             <label for="role" class="block text-gray-700 font-medium mb-1">Role</label>
             <select name="role" id="role" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
                 <option value="">-- Pilih Role --</option>
-                <option value="admin">Admin</option>
                 <option value="ketua">Ketua</option>
                 <option value="hakim">Hakim</option>
                 <option value="panitera">Panitera</option>
@@ -61,10 +85,13 @@
             <select name="atasan_id" id="atasan_id" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
                 <option value="">-- Pilih Atasan --</option>
                 @foreach($users as $u)
-                    <option value="{{ $u->id }}">{{ $u->name }} ({{ $u->jabatan }})</option>
+                    <option value="{{ $u->id }}" {{ old('atasan_id') == $u->id ? 'selected' : '' }}>
+                        {{ $u->name }} ({{ $u->jabatan }})
+                    </option>
                 @endforeach
             </select>
         </div>
+        
 
         <div>
             <label for="email" class="block text-gray-700 font-medium mb-1">Email</label>
@@ -87,7 +114,16 @@
             <input type="file" name="ttd" id="ttd" accept="image/*" class="w-full border border-gray-300 rounded px-3 py-2">
         </div>
 
+
+        <div class="mb-3">
+            <label for="ttd_path">Tanda Tangan (TTD)</label>
+            <input type="file" name="ttd" class="form-control" accept="image/*">
+        </div>
+
+     
+
         <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">Simpan</button>
+
     </form>
 </div>
 @endsection
