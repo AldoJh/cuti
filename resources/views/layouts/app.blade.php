@@ -1,41 +1,32 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>{{ config('app.name', 'Pengajuan Cuti') }}</title>
-
-  <!-- Stisla CSS -->
-  <link rel="stylesheet" href="{{ asset('stisla/assets/modules/bootstrap/css/bootstrap.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('stisla/assets/modules/fontawesome/css/all.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('stisla/assets/css/style.css') }}">
-  <link rel="stylesheet" href="{{ asset('stisla/assets/css/components.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config('app.name', 'Pengajuan Cuti') }}</title>
+    @vite('resources/css/app.css')
 </head>
-<body>
-  <div id="app">
-    <div class="main-wrapper">
-      
-      {{-- Navbar --}}
-      @include('layouts.navbar')
+<body class="bg-gray-100 text-gray-800">
+    <div class="flex min-h-screen">
 
-      {{-- Sidebar --}}
-      @include('layouts.sidebar')
+        {{-- Sidebar --}}
+        @include('layouts.sidebar')
 
-      {{-- Content --}}
-      <div class="main-content">
-        @yield('content')
-      </div>
+        {{-- Main content --}}
+        <div class="flex-1 flex flex-col">
+            {{-- Navbar --}}
+            @include('layouts.navbar')
 
-      {{-- Footer --}}
-      @include('layouts.footer')
+            {{-- Content --}}
+            <main class="flex-1 p-6 sm:p-8 lg:p-10">
+                @yield('content')
+            </main>
 
+            {{-- Footer --}}
+            @include('layouts.footer')
+        </div>
     </div>
-  </div>
 
-  <!-- Stisla JS -->
-  <script src="{{ asset('stisla/assets/modules/jquery.min.js') }}"></script>
-  <script src="{{ asset('stisla/assets/modules/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('stisla/assets/js/stisla.js') }}"></script>
-  <script src="{{ asset('stisla/assets/js/scripts.js') }}"></script>
+    @vite('resources/js/app.js')
 </body>
 </html>

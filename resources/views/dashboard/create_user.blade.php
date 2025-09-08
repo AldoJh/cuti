@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h2>Tambah User Baru</h2>
+<div class="p-6 max-w-3xl mx-auto bg-white shadow rounded-lg">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Tambah User Baru</h2>
 
-    {{-- Tampilkan error validasi --}}
+    {{-- Error --}}
     @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
+        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+            <ul class="list-disc pl-5">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -15,34 +15,34 @@
         </div>
     @endif
 
-    {{-- Tampilkan pesan sukses --}}
+    {{-- Success --}}
     @if(session('success'))
-        <div class="alert alert-success">
+        <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
             {{ session('success') }}
         </div>
     @endif
 
-    <form action="{{ route('store-user') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('store-user') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
         @csrf
 
-        <div class="mb-3">
-            <label for="name">Nama</label>
-            <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+        <div>
+            <label for="name" class="block text-gray-700 font-medium mb-1">Nama</label>
+            <input type="text" name="name" id="name" value="{{ old('name') }}" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
         </div>
 
-        <div class="mb-3">
-            <label for="nip">NIP</label>
-            <input type="number" name="nip" class="form-control" value="{{ old('nip') }}">
+        <div>
+            <label for="nip" class="block text-gray-700 font-medium mb-1">NIP</label>
+            <input type="number" name="nip" id="nip" value="{{ old('nip') }}" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
         </div>
 
-        <div class="mb-3">
-            <label for="jabatan">Jabatan</label>
-            <input type="text" name="jabatan" class="form-control" value="{{ old('jabatan') }}">
+        <div>
+            <label for="jabatan" class="block text-gray-700 font-medium mb-1">Jabatan</label>
+            <input type="text" name="jabatan" id="jabatan" value="{{ old('jabatan') }}" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
         </div>
 
-        <div class="mb-3">
-            <label for="role">Role</label>
-            <select name="role" class="form-control" required>
+        <div>
+            <label for="role" class="block text-gray-700 font-medium mb-1">Role</label>
+            <select name="role" id="role" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
                 <option value="">-- Pilih Role --</option>
                 <option value="admin">Admin</option>
                 <option value="ketua">Ketua</option>
@@ -56,9 +56,9 @@
             </select>
         </div>
 
-        <div class="mb-3">
-            <label for="atasan_id">Atasan</label>
-            <select name="atasan_id" class="form-control">
+        <div>
+            <label for="atasan_id" class="block text-gray-700 font-medium mb-1">Atasan</label>
+            <select name="atasan_id" id="atasan_id" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
                 <option value="">-- Pilih Atasan --</option>
                 @foreach($users as $u)
                     <option value="{{ $u->id }}">{{ $u->name }} ({{ $u->jabatan }})</option>
@@ -66,27 +66,28 @@
             </select>
         </div>
 
-        <div class="mb-3">
-            <label for="email">Email</label>
-            <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
+        <div>
+            <label for="email" class="block text-gray-700 font-medium mb-1">Email</label>
+            <input type="email" name="email" id="email" value="{{ old('email') }}" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
         </div>
 
-        <div class="mb-3">
-            <label for="password">Password</label>
-            <input type="password" name="password" class="form-control" required>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="password" class="block text-gray-700 font-medium mb-1">Password</label>
+                <input type="password" name="password" id="password" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+            <div>
+                <label for="password_confirmation" class="block text-gray-700 font-medium mb-1">Konfirmasi Password</label>
+                <input type="password" name="password_confirmation" id="password_confirmation" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label for="password_confirmation">Konfirmasi Password</label>
-            <input type="password" name="password_confirmation" class="form-control" required>
+        <div>
+            <label for="ttd" class="block text-gray-700 font-medium mb-1">Tanda Tangan (TTD)</label>
+            <input type="file" name="ttd" id="ttd" accept="image/*" class="w-full border border-gray-300 rounded px-3 py-2">
         </div>
 
-        <div class="mb-3">
-            <label for="ttd">Tanda Tangan (TTD)</label>
-            <input type="file" name="ttd" class="form-control" accept="image/*">
-        </div>
-
-        <button type="submit" class="btn btn-primary">Simpan</button>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">Simpan</button>
     </form>
 </div>
 @endsection
