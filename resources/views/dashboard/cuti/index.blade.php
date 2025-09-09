@@ -37,6 +37,7 @@
                         {{ ucfirst(str_replace('_', ' ', $c->status)) }}
                     </span>
                 </div>
+                
 
                 {{-- Surat Sakit --}}
                 @if($c->jenis_cuti === 'sakit' && $c->surat_sakit)
@@ -50,7 +51,20 @@
                         </p>
                     </div>
                 @endif
+                <div class="mt-4">
+                    <a href="{{ route('cuti.print_form', $c->id) }}" target="_blank"
+                        class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-md transition-all duration-300">
+                         🖨️ Print Form Cuti
+                     </a>
+                </div>
+                <div class="mt-4">
+                    <a href="{{ route('cuti.print_izin', $c->id) }}" target="_blank"
+                        class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-md transition-all duration-300">
+                         🖨️ Print surat izin
+                     </a>
+                </div>
             </div>
+            
         @endforeach
     </div>
 
@@ -61,5 +75,6 @@
             ← Kembali ke Dashboard
         </a>
     </div>
+    
 </div>
 @endsection

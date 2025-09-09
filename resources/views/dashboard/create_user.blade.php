@@ -60,6 +60,48 @@
             </select>
         </div>
 
+        {{-- Atasan --}}
+<div>
+    <label for="atasan_id" class="block text-gray-700 font-medium mb-1">Atasan</label>
+    <select name="atasan_id" id="atasan_id"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
+        <option value="">-- Pilih Atasan --</option>
+        @foreach($users as $atasan)
+            <option value="{{ $atasan->id }}" {{ old('atasan_id') == $atasan->id ? 'selected' : '' }}>
+                {{ $atasan->name }} - {{ $atasan->jabatan }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+{{-- Unit Kerja --}}
+<div>
+    <label for="unit_kerja" class="block text-gray-700 font-medium mb-1">Unit Kerja</label>
+    <input type="text" name="unit_kerja" id="unit_kerja" value="{{ old('unit_kerja') }}"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2">
+</div>
+
+{{-- No Telp --}}
+<div>
+    <label for="no_telp" class="block text-gray-700 font-medium mb-1">No. Telepon</label>
+    <input type="text" name="no_telp" id="no_telp" value="{{ old('no_telp') }}"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2">
+</div>
+
+{{-- Golongan --}}
+<div>
+    <label for="golongan" class="block text-gray-700 font-medium mb-1">Golongan</label>
+    <input type="text" name="golongan" id="golongan" value="{{ old('golongan') }}"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2">
+</div>
+
+{{-- Tanggal Masuk --}}
+<div>
+    <label for="tanggal_masuk" class="block text-gray-700 font-medium mb-1">Tanggal Masuk</label>
+    <input type="date" name="tanggal_masuk" id="tanggal_masuk" value="{{ old('tanggal_masuk') }}"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2">
+</div>
+
         {{-- Email --}}
         <div>
             <label for="email" class="block text-gray-700 font-medium mb-1">Email</label>
