@@ -205,6 +205,23 @@ class PengajuanCutiController extends Controller
             return redirect()->back()->with('success', 'Pengajuan cuti telah disetujui.');
     }
 
+    //reject function
+    public function reject($id)
+    {
+        $cuti = Pengajuan_Cuti::findOrFail($id);
+        $user = auth()->user();
+
+        if ($cuti->current_approval_id != $user->id) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki hak untuk menolak cuti ini.');
+        }
+
+        $cuti->current_approval_id = null;
+        $cuti->status = 'ditolak';
+        $cuti->save();
+
+        return redirect()->back()->with('success', 'Pengajuan cuti telah ditolak.');
+    }
+
 
     public function pengajuan($id)
     {
@@ -222,4 +239,71 @@ class PengajuanCutiController extends Controller
 
     return view('dashboard.cuti.pengajuan', compact('pengajuanCuti', 'user'));
     }
+
+    public function print_formcuti($id)
+{
+    $cuti = pengajuan_cuti::findOrFail($id);
+    $user = User::find($cuti->user_id);
+    $atasan = User::find($user->atasan_id);
+
+    // Cari user dengan role ketua
+    $ketua = User::where('role', 'ketua')->first();
+
+    // Logika tampilkan TTD
+    $showAtasan = false;
+    $showKetua = false;
+
+    if (is_null($cuti->current_approval_id)) {
+        // Jika belum ada approval → tampilkan dua-duanya
+        $showAtasan = true;
+        $showKetua = true;
+    } elseif ($cuti->current_approval_id == $ketua?->id) {
+        // Jika yang approve adalah ketua → tampilkan ketua
+        $showKetua = false;
+        $showAtasan = true;
+    } else {
+        // Kalau approval_id bukan ketua → (default) tidak tampilkan atasan
+        $showAtasan = false;
+    }
+
+    return view('dashboard.cuti.print_formcuti', compact(
+        'cuti',
+        'user',
+        'atasan',
+        'ketua',
+        'showAtasan',
+        'showKetua'
+    ));
+}
+
+//print surat izin cuti function
+public function print_suratizin($id)
+{
+    $cuti = pengajuan_cuti::findOrFail($id);
+    $user = User::find($cuti->user_id);
+    $atasan = User::find($user->atasan_id);
+
+    // Cari user dengan role ketua
+    $ketua = User::where('role', 'ketua')->first();
+
+    // Logika tampilkan TTD
+    $showAtasan = false;
+    $showKetua = false;
+
+    if (is_null($cuti->current_approval_id)) {
+        // Jika belum ada approval → tampilkan dua-duanya
+        $showKetua = true;
+    } else {
+        // Kalau approval_id bukan ketua → (default) tidak tampilkan atasan
+        $showKetua = false;
+    }
+
+    return view('dashboard.cuti.print_suratizin', compact(
+        'cuti',
+        'user',
+        'ketua',
+        'showKetua'
+    ));
+
+}
 }

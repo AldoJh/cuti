@@ -33,4 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/lihat', [PengajuanCutiController::class, 'show'])->name('cuti.index');
     Route::get('/cuti/pengajuan/{id}', [PengajuanCutiController::class, 'pengajuan'])->name('cuti.pengajuan');
     Route::post('/cuti/pengajuan/{id}/approve', [PengajuanCutiController::class, 'approve'])->name('cuti.approve');
+    Route::post('/cuti/pengajuan/{id}/reject', [PengajuanCutiController::class, 'reject'])->name('cuti.reject');
+    Route::get('/cuti/print/form/{id}', [PengajuanCutiController::class, 'print_formcuti'])->name('cuti.print_form');
+    Route::get('/cuti/print/izin/{id}', [PengajuanCutiController::class, 'print_suratizin'])->name('cuti.print_izin');
 });
