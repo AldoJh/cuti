@@ -1,63 +1,100 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="p-6 max-w-3xl mx-auto bg-white shadow rounded-lg">
-    <h1 class="text-2xl font-semibold text-gray-800 mb-4">Form Pengajuan Cuti</h1>
-
-    <form action="{{ route('cuti.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-        @csrf
-
-
-        <div class="form-group">
-          <label>Jenis Cuti</label>
-          <select name="jenis_cuti" id="jenis_cuti" class="form-control" required>
-            <option value="">-- Pilih --</option>
-            <option value="tahunan">Cuti Tahunan</option>
-            <option value="sakit">Cuti Sakit</option>
-            <option value="besar">Cuti Besar</option>
-            <option value="melahirkan">Cuti Melahirkan</option>
-            <option value="alasan_penting">Cuti Alasan Penting</option>
-            <option value="cltn">Cuti LTN (Luar Tanggungan Negara)</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Tanggal Mulai</label>
-          <input type="date" name="tanggal_mulai" class="form-control" required>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="p-6 max-w-3xl mx-auto">
+    {{-- Card --}}
+    <div class="bg-white shadow-xl rounded-2xl p-6 border border-gray-200">
+        {{-- Header --}}
+        <div class="flex items-center gap-4 mb-6">
+            <img src="{{ asset('images/logopnrm.png') }}" alt="Logo PN" class="w-14 h-14">
             <div>
-                <label for="tanggal_mulai" class="block text-gray-700 font-medium mb-1">Tanggal Mulai</label>
-                <input type="date" name="tanggal_mulai" id="tanggal_mulai" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
-            </div>
-            <div>
-                <label for="tanggal_selesai" class="block text-gray-700 font-medium mb-1">Tanggal Selesai</label>
-                <input type="date" name="tanggal_selesai" id="tanggal_selesai" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <h1 class="text-2xl font-bold text-gray-800">Form Pengajuan Cuti</h1>
+                <p class="text-gray-500 text-sm">Silakan isi form berikut untuk mengajukan cuti pegawai</p>
             </div>
         </div>
 
-        <div>
-            <label for="alasan" class="block text-gray-700 font-medium mb-1">Alasan</label>
-            <textarea name="alasan" id="alasan" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
-        </div>
+        {{-- Alert Sukses & Error --}}
+        @if(session('success'))
+            <div class="mb-4 p-3 bg-green-100 text-green-700 rounded-md border border-green-200">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-md border border-red-200">
+                {{ session('error') }}
+            </div>
+        @endif
 
-        <div id="surat_sakit_group" class="hidden">
-            <label for="surat_sakit" class="block text-gray-700 font-medium mb-1">Unggah Surat Cuti Sakit</label>
-            <input type="file" name="surat_sakit" id="surat_sakit" accept="image/*,.pdf" class="w-full border border-gray-300 rounded px-3 py-2">
-            <p class="text-sm text-gray-500 mt-1">Hanya wajib untuk cuti sakit. Format: pdf/jpg/png, max 2MB.</p>
-        </div>
+        {{-- Form --}}
+        <form action="{{ route('cuti.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+            @csrf
 
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">Ajukan</button>
-    </form>
+            {{-- Jenis Cuti --}}
+            <div>
+                <label for="jenis_cuti" class="block text-gray-700 font-medium mb-1">Jenis Cuti</label>
+                <select name="jenis_cuti" id="jenis_cuti" required
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <option value="">-- Pilih --</option>
+                    <option value="tahunan">Cuti Tahunan</option>
+                    <option value="sakit">Cuti Sakit</option>
+                    <option value="besar">Cuti Besar</option>
+                    <option value="melahirkan">Cuti Melahirkan</option>
+                    <option value="alasan_penting">Cuti Alasan Penting</option>
+                    <option value="cltn">Cuti LTN (Luar Tanggungan Negara)</option>
+                </select>
+            </div>
+
+            {{-- Tanggal Mulai & Selesai --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="tanggal_mulai" class="block text-gray-700 font-medium mb-1">Tanggal Mulai</label>
+                    <input type="date" name="tanggal_mulai" id="tanggal_mulai" required
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+                <div>
+                    <label for="tanggal_selesai" class="block text-gray-700 font-medium mb-1">Tanggal Selesai</label>
+                    <input type="date" name="tanggal_selesai" id="tanggal_selesai" required
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+            </div>
+
+            {{-- Alasan --}}
+            <div>
+                <label for="alasan" class="block text-gray-700 font-medium mb-1">Alasan</label>
+                <textarea name="alasan" id="alasan" required rows="3"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    placeholder="Jelaskan alasan cuti secara singkat"></textarea>
+            </div>
+
+            {{-- Surat Sakit --}}
+            <div id="surat_sakit_group" class="hidden">
+                <label for="surat_sakit" class="block text-gray-700 font-medium mb-1">Unggah Surat Cuti Sakit</label>
+                <input type="file" name="surat_sakit" id="surat_sakit" accept="image/*,.pdf"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                <p class="text-sm text-gray-500 mt-1">Wajib diunggah untuk cuti sakit. Format: pdf/jpg/png, max 2MB.</p>
+            </div>
+
+            {{-- Tombol Submit --}}
+            <div class="flex justify-end gap-3 pt-2">
+                <a href="{{ route('dashboard') }}"
+                   class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-2 rounded-lg shadow transition">
+                    Batal
+                </a>
+                <button type="submit"
+                    class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg shadow transition">
+                    Ajukan Cuti
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
-  const jenisCuti = document.getElementById('jenis_cuti');
-  const suratGroup = document.getElementById('surat_sakit_group');
+    const jenisCuti = document.getElementById('jenis_cuti');
+    const suratGroup = document.getElementById('surat_sakit_group');
 
-  jenisCuti.addEventListener('change', function() {
-    suratGroup.classList.toggle('hidden', this.value !== 'sakit');
-  });
+    jenisCuti.addEventListener('change', function() {
+        suratGroup.classList.toggle('hidden', this.value !== 'sakit');
+    });
 </script>
 @endsection

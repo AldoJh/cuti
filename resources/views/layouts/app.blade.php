@@ -13,7 +13,7 @@
         @include('layouts.sidebar')
 
         {{-- Main content --}}
-        <div class="flex-1 flex flex-col">
+        <div class="flex-1 flex flex-col min-h-screen">
             {{-- Navbar --}}
             @include('layouts.navbar')
 

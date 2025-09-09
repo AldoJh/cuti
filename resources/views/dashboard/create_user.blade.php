@@ -1,13 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="p-6 max-w-3xl mx-auto bg-white shadow rounded-lg">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">Tambah User Baru</h2>
+<div class="p-6 max-w-3xl mx-auto bg-white shadow-lg rounded-xl border border-gray-200">
+    {{-- Header --}}
+    <div class="flex items-center justify-between mb-5">
+        <h1 class="text-2xl font-bold text-gray-800">Tambah User Baru</h1>
+        <img src="{{ asset('images/logopnrm.png') }}" alt="Logo PN" class="w-12 h-12 drop-shadow-md">
+    </div>
 
-    {{-- Error --}}
+    {{-- Notifikasi --}}
     @if ($errors->any())
-        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
-            <ul class="list-disc pl-5">
+        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-lg shadow">
+            <ul class="list-disc pl-5 space-y-1">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -15,59 +19,35 @@
         </div>
     @endif
 
-    {{-- Success --}}
     @if(session('success'))
-        <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
+        <div class="mb-4 p-3 bg-green-100 text-green-700 rounded-lg shadow">
             {{ session('success') }}
         </div>
     @endif
 
-    <form action="{{ route('store-user') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+    {{-- Form --}}
+    <form action="{{ route('store-user') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
         @csrf
 
+        {{-- Nama --}}
         <div>
             <label for="name" class="block text-gray-700 font-medium mb-1">Nama</label>
-            <input type="text" name="name" id="name" value="{{ old('name') }}" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
-        </div>
-        <div class="mb-3">
-            <label for="nip">NIP</label>
-            <input type="text" name="nip" class="form-control" value="{{ old('nip') }}">
+            <input type="text" name="name" id="name" value="{{ old('name') }}" required
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
         </div>
 
-        {{-- <div class="mb-3">
-            <label for="jabatan">Jabatan</label>
-            <input type="text" name="jabatan" class="form-control" value="{{ old('jabatan') }}">
-        </div> --}}
-
-        <div class="mb-3">
-            <label for="unit_kerja">Unit Kerja</label>
-            <input type="text" name="unit_kerja" class="form-control" value="{{ old('unit_kerja') }}">
+        {{-- NIP --}}
+        <div>
+            <label for="nip" class="block text-gray-700 font-medium mb-1">NIP</label>
+            <input type="text" name="nip" id="nip" value="{{ old('nip') }}"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
         </div>
 
-        <div class="mb-3">
-            <label for="no_telp">No. Telepon</label>
-            <input type="text" name="no_telp" class="form-control" value="{{ old('no_telp') }}">
-        </div>
-
-        <div class="mb-3">
-            <label for="golongan">Golongan</label>
-            <input type="text" name="golongan" class="form-control" value="{{ old('golongan') }}">
-        </div>
-
-        <div class="mb-3">
-            <label for="tanggal_masuk">Tanggal Masuk</label>
-            <input type="date" name="tanggal_masuk" class="form-control" value="{{ old('tanggal_masuk') }}">
-        </div>
-
-        <div class="mb-3">
-            <label for="sisa_cuti_tahun_lalu">Sisa Cuti Tahun Lalu</label>
-            <input type="number" name="sisa_cuti_tahun_lalu" class="form-control" value="{{ old('sisa_cuti_tahun_lalu', 0) }}">
-
-        </div>
-
+        {{-- Role --}}
         <div>
             <label for="role" class="block text-gray-700 font-medium mb-1">Role</label>
-            <select name="role" id="role" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <select name="role" id="role" required
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
                 <option value="">-- Pilih Role --</option>
                 <option value="ketua">Ketua</option>
                 <option value="hakim">Hakim</option>
@@ -80,50 +60,41 @@
             </select>
         </div>
 
-        <div>
-            <label for="atasan_id" class="block text-gray-700 font-medium mb-1">Atasan</label>
-            <select name="atasan_id" id="atasan_id" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                <option value="">-- Pilih Atasan --</option>
-                @foreach($users as $u)
-                    <option value="{{ $u->id }}" {{ old('atasan_id') == $u->id ? 'selected' : '' }}>
-                        {{ $u->name }} ({{ $u->jabatan }})
-                    </option>
-                @endforeach
-            </select>
-        </div>
-        
-
+        {{-- Email --}}
         <div>
             <label for="email" class="block text-gray-700 font-medium mb-1">Email</label>
-            <input type="email" name="email" id="email" value="{{ old('email') }}" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <input type="email" name="email" id="email" value="{{ old('email') }}" required
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
         </div>
 
+        {{-- Password --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
                 <label for="password" class="block text-gray-700 font-medium mb-1">Password</label>
-                <input type="password" name="password" id="password" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <input type="password" name="password" id="password" required
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
             </div>
             <div>
                 <label for="password_confirmation" class="block text-gray-700 font-medium mb-1">Konfirmasi Password</label>
-                <input type="password" name="password_confirmation" id="password_confirmation" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <input type="password" name="password_confirmation" id="password_confirmation" required
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
             </div>
         </div>
 
+        {{-- TTD --}}
         <div>
             <label for="ttd" class="block text-gray-700 font-medium mb-1">Tanda Tangan (TTD)</label>
-            <input type="file" name="ttd" id="ttd" accept="image/*" class="w-full border border-gray-300 rounded px-3 py-2">
+            <input type="file" name="ttd" id="ttd" accept="image/*"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2">
         </div>
 
-
-        <div class="mb-3">
-            <label for="ttd_path">Tanda Tangan (TTD)</label>
-            <input type="file" name="ttd" class="form-control" accept="image/*">
+        {{-- Tombol Simpan --}}
+        <div class="flex justify-end">
+            <button type="submit"
+                class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg shadow transition">
+                Simpan
+            </button>
         </div>
-
-     
-
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">Simpan</button>
-
     </form>
 </div>
 @endsection
