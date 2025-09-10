@@ -49,13 +49,13 @@
             </div>
 
             <!-- Tombol Buat Akun -->
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <button type="button"
                     onclick="alert('Fitur pendaftaran akan segera hadir!')"
                     class="w-full bg-gray-300 text-gray-600 py-2 rounded-lg cursor-not-allowed">
                     Buat Akun
                 </button>
-            </div>
+            </div> -->
         </form>
     </div>
 </div>

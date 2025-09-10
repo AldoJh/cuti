@@ -252,6 +252,7 @@ class PengajuanCutiController extends Controller
     // Logika tampilkan TTD
     $showAtasan = false;
     $showKetua = false;
+    
 
     if (is_null($cuti->current_approval_id)) {
         // Jika belum ada approval → tampilkan dua-duanya
@@ -266,13 +267,16 @@ class PengajuanCutiController extends Controller
         $showAtasan = false;
     }
 
+    $showUserTTD = true; 
+
     return view('dashboard.cuti.print_formcuti', compact(
         'cuti',
         'user',
         'atasan',
         'ketua',
         'showAtasan',
-        'showKetua'
+        'showKetua',
+        'showUserTTD'
     ));
 }
 
