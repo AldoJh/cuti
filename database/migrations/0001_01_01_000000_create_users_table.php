@@ -29,8 +29,9 @@ return new class extends Migration
                 'panitera_pengganti', // Panitera Pengganti
                 'sekretaris',     // Sekretaris
                 'kasubbag',       // Kepala Sub Bagian
-                'pegawai'         // pegawai biasa atau staf
-            ])->default('pegawai'); // Role untuk akses sistem
+                'ppnpn',
+                'bakti'       // ppnpn biasa atau staf
+            ])->default('ppnpn'); // Role untuk akses sistem
             $table->unsignedBigInteger('atasan_id')->nullable();
             $table->foreign('atasan_id')->references('id')->on('users')->onDelete('set null');
             $table->integer('sisa_cuti_tahun_lalu')->default(0);

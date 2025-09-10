@@ -17,7 +17,7 @@
             <thead class="bg-red-600 text-white">
                 <tr>
                     <th class="px-4 py-3 text-left font-semibold">Nama Pegawai</th>
-                    <th class="px-4 py-3 text-left font-semibold">Role</th>
+                    <th class="px-4 py-3 text-left font-semibold">Jabatan</th>
                     <th class="px-4 py-3 text-center font-semibold">Sisa Cuti Tahunan</th>
                     <th class="px-4 py-3 text-center font-semibold">Sisa Cuti Sakit</th>
                 </tr>
