@@ -306,4 +306,19 @@ public function print_suratizin($id)
     ));
 
 }
+
+//get all semua pengajuan cuti
+public function allpengajuan()
+{
+    $user = auth()->user();
+
+    if ($user->role !== 'admin') {
+        abort(403, 'Akses ditolak.');
+    }
+
+    // Ambil semua pengajuan cuti
+    $cutis = Pengajuan_Cuti::orderBy('created_at', 'desc')->get();
+
+    return view('dashboard.cuti.get_all_cuti', compact('cutis', 'user'));
+}
 }

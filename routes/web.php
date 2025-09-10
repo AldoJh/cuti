@@ -36,4 +36,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cuti/pengajuan/{id}/reject', [PengajuanCutiController::class, 'reject'])->name('cuti.reject');
     Route::get('/cuti/print/form/{id}', [PengajuanCutiController::class, 'print_formcuti'])->name('cuti.print_form');
     Route::get('/cuti/print/izin/{id}', [PengajuanCutiController::class, 'print_suratizin'])->name('cuti.print_izin');
+    Route::get('/cuti/all', [PengajuanCutiController::class, 'allpengajuan'])->name('cuti.all');
 });
