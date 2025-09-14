@@ -56,7 +56,8 @@
                 <option value="panitera_pengganti">Panitera Pengganti</option>
                 <option value="sekretaris">Sekretaris</option>
                 <option value="kasubbag">Kasubbag</option>
-                <option value="pegawai">Pegawai</option>
+                <option value="ppnpn">PPNPN</option>
+                <option value="bakti">Bakti</option>
             </select>
         </div>
 

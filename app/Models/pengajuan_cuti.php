@@ -25,4 +25,9 @@ class pengajuan_cuti extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function approval()
+{
+    return $this->belongsTo(User::class, 'current_approval_id');
+}
+
 }
