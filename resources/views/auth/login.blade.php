@@ -21,16 +21,19 @@
             <h1 class="text-2xl font-bold text-gray-800">Aplikasi Cuti Pegawai</h1>
             <p class="text-gray-500 text-sm">Pengadilan Negeri Lhokseumawe</p>
         </div>
-
+        
 
         <!-- Form Login -->
         <form method="POST" action="{{ route('login') }}">
             @csrf
-            <!-- Email -->
+            <!-- Email/NIP -->
             <div class="mb-4">
-                <label for="email" class="block text-gray-700 font-medium mb-1">Email</label>
-                <input id="email" type="email" name="email" required autofocus
+                <label for="login" class="block text-gray-700 font-medium mb-1">Email/NIP</label>
+                <input id="login" type="text" name="login" required autofocus
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    @error('login')
+                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Password -->
@@ -38,7 +41,17 @@
                 <label for="password" class="block text-gray-700 font-medium mb-1">Password</label>
                 <input id="password" type="password" name="password" required
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    @error('password')
+                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
+
+             <!-- Error global (Email/NIP atau password salah) -->
+             @if ($errors->has('login'))
+             <div class="mb-3">
+                 <p class="text-red-600 text-sm">{{ $errors->first('login') }}</p>
+             </div>
+         @endif
 
             <!-- Tombol Login -->
             <div class="mb-3">
@@ -49,13 +62,13 @@
             </div>
 
             <!-- Tombol Buat Akun -->
-            <div class="mb-3">
+            {{-- <div class="mb-3">
                 <button type="button"
                     onclick="alert('Fitur pendaftaran akan segera hadir!')"
                     class="w-full bg-gray-300 text-gray-600 py-2 rounded-lg cursor-not-allowed">
                     Buat Akun
                 </button>
-            </div>
+            </div> --}}
         </form>
     </div>
 </div>

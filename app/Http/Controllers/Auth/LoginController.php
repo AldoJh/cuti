@@ -14,21 +14,23 @@ class LoginController extends Controller
     }
 
     public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+{
+    $request->validate([
+        'login' => 'required|string', // bisa email atau nip
+        'password' => 'required|string'
+    ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
-        }
+    $loginField = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'nip';
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ]);
+    if (Auth::attempt([$loginField => $request->login, 'password' => $request->password])) {
+        $request->session()->regenerate();
+        return redirect()->intended('/dashboard');
     }
+
+    return back()->withErrors([
+        'login' => 'Email/NIP atau password salah!',
+    ]);
+}
 
     public function logout(Request $request)
     {

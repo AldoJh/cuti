@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB; 
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class PengajuanCutiController extends Controller
 {
@@ -63,7 +64,7 @@ class PengajuanCutiController extends Controller
                 ->sum(DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
 
             $sisaCutiLalu = min($user->sisa_cuti_tahun_lalu ?? 0, 6);
-            $kuotaTahunan = 12 + $sisaCutiLalu;
+            $kuotaTahunan = $user->sisa_cuti_tahunan; + $sisaCutiLalu;
 
             if (($totalTahunan + $hariCuti) > $kuotaTahunan) {
                 return back()->with('error', 'Kuota cuti tahunan Anda melebihi batas.');
@@ -77,7 +78,7 @@ class PengajuanCutiController extends Controller
                 ->whereYear('tanggal_mulai', now()->year)
                 ->sum(DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
 
-            $kuotaSakit = ($request->alasan === 'gugur_kandungan') ? 45 : 14;
+            $kuotaSakit = $user->sisa_cuti_sakit;
 
             if (($totalSakit + $hariCuti) > $kuotaSakit) {
                 return back()->with('error', 'Kuota cuti sakit Anda melebihi batas.');
@@ -321,4 +322,31 @@ public function allpengajuan()
 
     return view('dashboard.cuti.get_all_cuti', compact('cutis', 'user'));
 }
+public function updateCuti(Request $request, $id)
+{
+    $request->validate([
+        'sisa_cuti_tahunan' => 'required|integer|min:0',
+        'sisa_cuti_sakit' => 'required|integer|min:0',
+    ]);
+
+    $user = User::findOrFail($id);
+    $user->sisa_cuti_tahunan = $request->sisa_cuti_tahunan;
+    $user->sisa_cuti_sakit = $request->sisa_cuti_sakit;
+    $user->save();
+
+    return redirect()->back()->with('success', 'Sisa cuti berhasil diperbarui.');
+}
+
+public function editcuti($id)
+{
+    //hanya admin yang bisa buka halaman edit
+    $user = auth()->user();
+    if ($user->role !== 'admin') {
+        abort(403, 'Akses ditolak.');
+    }
+    //get semua data user by id
+    $user = User::findOrFail($id);
+    return view('dashboard.cuti.edit_cuti', compact('user'));
+}
+
 }

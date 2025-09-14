@@ -13,21 +13,25 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+{
+    $request->validate([
+        'login' => 'required|string', 
+        'password' => 'required|string'
+    ]);
 
-        if (Auth::attempt($request->only('email', 'password'))) {
-            $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
-        }
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah!',
-        ]);
+    $loginField = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'nip';
+
+    if (Auth::attempt([$loginField => $request->login, 'password' => $request->password])) {
+        $request->session()->regenerate();
+        return redirect()->intended('/dashboard');
     }
+
+    return back()->withErrors([
+        'login' => 'Email/NIP atau password salah!',
+    ]);
+}
+
 
     public function logout(Request $request)
     {

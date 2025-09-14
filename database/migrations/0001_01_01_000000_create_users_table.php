@@ -34,13 +34,17 @@ return new class extends Migration
             ])->default('ppnpn'); // Role untuk akses sistem
             $table->unsignedBigInteger('atasan_id')->nullable();
             $table->foreign('atasan_id')->references('id')->on('users')->onDelete('set null');
-            $table->integer('sisa_cuti_tahun_lalu')->default(0);
+            $table->integer('sisa_cuti_sakit_bulan_lalu')->default(0);
+            $table->integer('sisa_cuti_tahunan_bulan_lalu')->default(0);
             $table->string('ttd_path')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->integer('sisa_cuti_tahunan')->default(12); 
+            $table->integer('sisa_cuti_sakit')->default(14);   
+
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

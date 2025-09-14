@@ -27,6 +27,9 @@
                     <th class="px-4 py-3 text-left font-semibold">Atasan</th>
                     <th class="px-4 py-3 text-left font-semibold">Email</th>
                     <th class="px-4 py-3 text-center font-semibold">TTD</th>
+                    <th class="px-4 py-3 text-center font-semibold">Sisa cuti tahunan</th>
+                    <th class="px-4 py-3 text-center font-semibold">Sisa cuti sakit</th>
+                    <th class="px-4 py-3 text-center font-semibold">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
@@ -45,6 +48,12 @@
                         @else
                             <span class="text-gray-400 italic">Belum ada</span>
                         @endif
+                    </td>
+                    <td class="px-4 py-2 text-center">{{ $u->sisa_cuti_tahunan ?? 0 }} hari</td>
+                    <td class="px-4 py-2 text-center">{{ $u->sisa_cuti_sakit ?? 0 }} hari</td>
+                    <td class="px-4 py-2 text-center">
+                        <a href="{{ route('cuti.edit', $u->id) }}"
+                            class="text-blue-600 hover:underline mr-2">Edit sisa cuti</a>
                     </td>
                 </tr>
                 @empty
