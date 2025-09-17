@@ -32,11 +32,11 @@
                 @forelse($cutis as $cuti)
                 <tr class="hover:bg-gray-50 transition">
                     <td class="px-4 py-2 font-medium text-gray-700">{{ $cuti->id }}</td>
-                    <td class="px-4 py-2">{{ $cuti->user->name }} - {{$cuti->user->jabatan}}</td>
+                    <td class="px-4 py-2">{{ $cuti->user->name ?? '' }} - {{$cuti->user->jabatan ?? ''}}</td>
                     <td class="px-4 py-2">{{ $cuti->jenis_cuti }}</td>
                     <td class="px-4 py-2 text-center">{{ $cuti->tanggal_mulai }}</td>
                     <td class="px-4 py-2 text-center">{{ $cuti->tanggal_selesai }}</td>
-                    <td class="px-4 py-2">{{ $cuti->approval->name }} - {{$cuti->approval->jabatan}}</td>
+                    <td class="px-4 py-2">{{ $cuti->approval->name ?? '' }} - {{$cuti->approval->jabatan ?? ''}}</td>
                     <td class="px-4 py-2 text-center">
                         <span class="px-3 py-1 text-xs font-semibold rounded-full
                             @if($cuti->status === 'Approved') bg-green-100 text-green-700
