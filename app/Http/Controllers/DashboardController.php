@@ -108,7 +108,7 @@ class DashboardController extends Controller
         $user = User::create([
             'name' => $request->name,
             'nip' => $request->nip,
-            'jabatan' => $request->role,
+            'jabatan' => $request->jabatan,
             'role' => $request->role,
             'atasan_id' => $request->atasan_id,
             'sisa_cuti_tahun_lalu' => 0,

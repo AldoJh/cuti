@@ -43,6 +43,13 @@
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
         </div>
 
+        {{-- Jabatan --}}
+        <div>
+            <label for="jabatan" class="block text-gray-700 font-medium mb-1">Jabatan</label>
+            <input type="text" name="jabatan" id="jabatan" value="{{ old('jabatan') }}" required
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
+        </div>
+
         {{-- Role --}}
         <div>
             <label for="role" class="block text-gray-700 font-medium mb-1">Role</label>
