@@ -96,7 +96,7 @@ class DashboardController extends Controller
             'ttd' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
             'unit_kerja' => 'nullable|string|max:100',
             'no_telp' => 'nullable|string|max:20',
-            'golongan' => 'nullable|string|max:10',
+            'golongan' => 'nullable|string|max:50',
             'tanggal_masuk' => 'nullable|date',
         ]);
     
