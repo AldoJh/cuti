@@ -52,9 +52,20 @@
                     <td class="px-4 py-2 text-center">{{ $u->sisa_cuti_tahunan ?? 0 }} hari</td>
                     <td class="px-4 py-2 text-center">{{ $u->sisa_cuti_sakit ?? 0 }} hari</td>
                     <td class="px-4 py-2 text-center">
-                        <a href="{{ route('cuti.edit', $u->id) }}"
-                            class="text-blue-600 hover:underline mr-2">Edit sisa cuti</a>
+                        <div class="flex items-center justify-center space-x-2">
+                            <a href="{{ route('cuti.edit', $u->id) }}"
+                                class="px-3 py-1 text-sm text-white bg-green-600 rounded hover:bg-green-700 transition">
+                                Edit Sisa Cuti
+                            </a>
+                    
+                            <a href="{{ route('edit-user', $u->id) }}"
+                                class="px-3 py-1 text-sm text-black bg-blue-600 rounded hover:bg-blue-700 transition">
+                                Edit User
+                            </a>
+                        </div>
                     </td>
+                    
+                    
                 </tr>
                 @empty
                 <tr>
