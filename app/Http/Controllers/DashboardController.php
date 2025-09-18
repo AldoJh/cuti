@@ -148,4 +148,68 @@ class DashboardController extends Controller
         
     }
 
+    //edit user
+    public function edit_user($id)
+    {
+        $user = Auth::user();
+        if ($user->role !== 'admin') {
+            return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses halaman ini.');
+        }else{
+            $editUser = User::findOrFail($id);
+            $users = User::where('role', '!=', 'admin')->get();
+            return view('dashboard.cuti.edit_user', compact('editUser', 'users') );
+        }
+        
+    }
+
+    // update user
+public function update_user(Request $request, $id)
+{
+    $user = Auth::user();
+    if ($user->role !== 'admin') {
+        return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses halaman ini.');
+    }
+
+    // validasi
+    $request->validate([
+        'name'          => 'required|string|max:255',
+        'nip'           => 'nullable|string|max:50',
+        'jabatan'       => 'required|string|max:100',
+        'role'          => 'required|string',
+        'atasan_id'     => 'nullable|exists:users,id',
+        'unit_kerja'    => 'nullable|string|max:100',
+        'no_telp'       => 'nullable|string|max:20',
+        'golongan'      => 'nullable|string|max:50',
+        'tanggal_masuk' => 'nullable|date',
+        'email'         => 'required|email|unique:users,email,' . $id,
+        'ttd'           => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+
+    // ambil user
+    $editUser = User::findOrFail($id);
+
+    // update field
+    $editUser->name          = $request->name;
+    $editUser->nip           = $request->nip;
+    $editUser->jabatan       = $request->jabatan;
+    $editUser->role          = $request->role;
+    $editUser->atasan_id     = $request->atasan_id;
+    $editUser->unit_kerja    = $request->unit_kerja;
+    $editUser->no_telp       = $request->no_telp;
+    $editUser->golongan      = $request->golongan;
+    $editUser->tanggal_masuk = $request->tanggal_masuk;
+    $editUser->email         = $request->email;
+
+    // upload TTD kalau ada
+    if ($request->hasFile('ttd')) {
+        $path = $request->file('ttd')->store('ttd', 'public');
+        $editUser->ttd = $path;
+    }
+
+    $editUser->save();
+
+    return redirect()->route('edit-user', $id)->with('success', 'Data user berhasil diperbarui.');
+}
+
+
 }

@@ -24,6 +24,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/create-user', [DashboardController::class, 'create_user'])->name('create-user');
     Route::post('/create-user', [DashboardController::class, 'store_User'])->name('store-user');
     Route::get('/all-user',[DashboardController::class, 'getalluser'])->name('get-all-user');
+    Route::get('/edit-user/{id}', [DashboardController::class, 'edit_user'])->name('edit-user');
+    Route::put('/update-user/{id}', [DashboardController::class, 'update_user'])->name('update-user');
 });
 
 // Rute untuk pengajuan cuti
