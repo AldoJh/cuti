@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Surat Izin</title>
+    <title>Surat Izin Cuti</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Bookman Old Style', serif;
             margin: 30px;
             line-height: 1.6;
-            color: #1f2937;
+            color: #000000;
             font-size: 12px;
         }
 
@@ -16,8 +16,8 @@
             display: flex;
             align-items: center;
             border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            padding-bottom: 0px;
+            margin-bottom: 30px;
         }
 
         .logo {
@@ -25,7 +25,7 @@
         }
 
         .logo img {
-            width: 80px;
+            width: 90px;
             height: auto;
         }
 
@@ -36,13 +36,18 @@
         }
 
         .header-text .title {
-            font-size: 13px;
+            font-size: 15px;
             font-weight: bold;
         }
 
         .header-text .address {
-            font-size: 8px;
+            font-size: 9px;
             margin-top: 2px;
+        }
+
+        .header-text .address a {
+            text-decoration: underline;
+            color: #000000;
         }
 
         /* SURAT */
@@ -51,13 +56,15 @@
             font-size: 12px;
             font-weight: bold;
             margin-top: 20px;
-            margin-bottom: 5px;
+            margin-bottom: 0px;
             text-transform: uppercase;
+            text-decoration: underline;
         }
 
         .surat-number {
             text-align: center;
             font-size: 12px;
+            margin-top: 0px;
             margin-bottom: 20px;
         }
 
@@ -66,61 +73,66 @@
             margin-bottom: 20px;
         }
 
-        .isi-surat ol {
-            padding-left: 20px;
-            margin-top: 10px;
+        .isi-surat p {
+            margin: 6px;
         }
 
-        .isi-surat li {
-            margin-bottom: 8px;
+        .pegawai-info {
+            margin: 6px 0 6px 30px;
         }
 
-        /* Data Pegawai */
-        .pegawai-info p {
-            display: flex;
-            margin: 2px 0;
+        .pegawai-info table {
+            border-collapse: collapse;
         }
 
-        .pegawai-info span.label {
-            width: 140px;
+        .pegawai-info td {
+            padding: 2px 5px;
+            vertical-align: top;
+        }
+
+        .pegawai-info td.label {
+            width: 160px;
+        }
+
+        .pegawai-info td.value {
             font-weight: normal;
         }
 
-        .pegawai-info span.value {
-            flex: 1;
+        .pegawai-info td.value.nama {
+            font-weight: bold;
+        }
+
+        .aturan-cuti {
+            padding-left: 40px;
+            margin: 10px 0;
+        }
+
+        .aturan-cuti li {
+            margin-bottom: 5px;
         }
 
         /* TTD */
         .ttd-section {
-            margin-top: 60px;
+            margin-top: 40px;
             display: flex;
             justify-content: flex-end;
             text-align: center;
         }
 
         .ttd {
-            margin-top: 40px;
-            margin-bottom: 60px;
+            margin-top: 10px;
         }
 
         .ttd img {
             max-height: 80px;
             display: block;
-            margin: 0 auto 5px auto;
+            margin: 0 auto 0 auto;
         }
 
         .ttd-name {
             font-weight: bold;
-            font-size: 16px;
-        }
-
-        .ttd-jabatan {
-            font-size: 14px;
-            color: #4b5563;
-        }
-
-        .ttd-date {
-            margin-bottom: 10px;
+            font-size: 12px;
+            margin-top: 0px;
         }
 
         .note {
@@ -145,7 +157,7 @@
             </div>
             <div class="address">
                 Jalan Iskandar Muda Nomor 44 Kp. Jawa, Kecamatan Banda Sakti<br>
-                Kota Lhokseumawe, Aceh. www.pn-lhokseumawe.go.id, pn.lhokseumawe@gmail.com
+                Kota Lhokseumawe, Aceh. <a href="http://www.pn-lhokseumawe.go.id">www.pn-lhokseumawe.go.id</a>, pn.lhokseumawe@gmail.com
             </div>
         </div>
     </div>
@@ -160,15 +172,37 @@
     <div class="isi-surat">
         <p>1. Diberikan Cuti Tahunan Tahun {{ \Carbon\Carbon::parse($cuti->tanggal_mulai)->format('Y') }}, kepada Pegawai Negeri Sipil:</p>
 
-        <div class="pegawai-info" style="padding-left:15px; margin-bottom:15px;">
-            <p><span class="label">Nama</span>: <span class="value">{{ $user->name }}</span></p>
-            <p><span class="label">NIP</span>: <span class="value">{{ $user->nip ?? '-' }}</span></p>
-            <p><span class="label">Golongan</span>: <span class="value">{{ $user->golongan ?? '-' }}</span></p>
-            <p><span class="label">Jabatan</span>: <span class="value">{{ $user->jabatan ?? '-' }}</span></p>
-            <p><span class="label">Satuan Organisasi</span>: <span class="value">Pengadilan Negeri Lhokseumawe</span></p>
+        <div class="pegawai-info">
+            <table>
+                <tr>
+                    <td class="label">Nama</td>
+                    <td>:</td>
+                    <td class="value nama">{{ $user->name }}</td>
+                </tr>
+                <tr>
+                    <td class="label">NIP</td>
+                    <td>:</td>
+                    <td class="value">{{ $user->nip ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Pangkat / Gol. Ruang</td>
+                    <td>:</td>
+                    <td class="value">{{ $user->golongan ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Jabatan</td>
+                    <td>:</td>
+                    <td class="value">{{ $user->jabatan ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Satuan Organisasi</td>
+                    <td>:</td>
+                    <td class="value">Pengadilan Negeri Lhokseumawe</td>
+                </tr>
+            </table>
         </div>
 
-       @php
+        @php
             $diffDays = \Carbon\Carbon::parse($cuti->tanggal_mulai)
                         ->diffInDays(\Carbon\Carbon::parse($cuti->tanggal_selesai)) + 1;
             $months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -182,13 +216,11 @@
             $diffWords = $diffDays <= 10 ? $numberWords[$diffDays] : $diffDays;
         @endphp
 
-        <p>
-            Selama {{ $diffDays }} ({{ $diffWords }}) hari, terhitung mulai tanggal 
-            <b>{{ $startDay }} s.d {{ $endDay }} {{ $month }} {{ $year }}</b>, dengan ketentuan sebagai berikut:
+        <p style="margin-left: 24px;">
+            Selama <span class="ttd-date">{{ $diffDays }}</span> (<i>{{ $diffWords }}</i>) hari, terhitung mulai tanggal <span style="font-weight: bold;" class="ttd-date">{{ $startDay }} s.d {{ $endDay }} {{ $month }} {{ $year }}</span>, dengan ketentuan sebagai berikut:
         </p>
 
-
-        <ol type="a" style="padding-left:20px;">
+        <ol type="a" class="aturan-cuti">
             <li>Sebelum menjalankan Cuti Tahunan {{ $year }}, wajib menyerahkan pekerjaannya kepada atasan langsungnya;</li>
             <li>Setelah selesai menjalankan Cuti Tahunan {{ $year }}, wajib melaporkan diri kepada atasan langsungnya dan bekerja kembali seperti biasa.</li>
         </ol>
@@ -197,27 +229,23 @@
     </div>
 
     <!-- TTD -->
-    <div class="ttd-section" style="justify-content: flex-end; display: flex;">
+    <div class="ttd-section">
         <div style="text-align: left;">
-            <!-- Tanggal -->
-            <div class="ttd-date" style="margin-bottom:4px; font-size:12px;">
-                Lhokseumawe, {{ \Carbon\Carbon::parse($cuti->updated_at)->format('d F Y') }}
+            <div class="ttd-date">
+                Lhokseumawe, <span class="ttd-date">{{ \Carbon\Carbon::parse($cuti->updated_at)->format('d F Y') }}</span>
             </div>
-
-            <!-- Jabatan -->
-            <p style="margin:0; font-size:12px;">Ketua Pengadilan Negeri Lhokseumawe</p>
+            <p style="margin:0;">Ketua Pengadilan Negeri Lhokseumawe</p>
 
             @if($showKetua && $ketua && $ketua->ttd_path)
-                <div class="ttd" style="margin-top:20px;"> <!-- jarak ke ttd gambar -->
+                <div class="ttd">
                     <img src="{{ asset('storage/'.$ketua->ttd_path) }}" alt="TTD Ketua">
-                    <div class="ttd-name" style="font-size:14px;">{{ $ketua->name }}</div>
+                    <div class="ttd-name">{{ $ketua->name }}</div>
                 </div>
             @else
-                <p class="note" style="margin-top:20px;">(Belum ada persetujuan)</p>
+                <p class="note">(Belum ada persetujuan)</p>
             @endif
         </div>
     </div>
-
 
 </body>
 </html>
