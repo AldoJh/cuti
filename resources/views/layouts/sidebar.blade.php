@@ -1,7 +1,7 @@
 @php
 use App\Models\pengajuan_cuti;
 
-$rolesAtasan = ['panitera', 'sekretaris', 'ketua'];
+$rolesAtasan = ['panitera', 'sekretaris', 'ketua', 'hakim'];
 $rolesAdmin = ['admin', 'superadmin'];
 $currentRoute = Route::currentRouteName();
 
@@ -143,6 +143,13 @@ if (in_array(auth()->user()->role, $rolesAtasan)) {
                    class="flex items-center px-4 py-2 rounded-md transition duration-200
                    {{ $currentRoute == 'cuti.all' ? 'bg-red-700 font-semibold text-white' : 'text-red-100 hover:bg-red-800' }}">
                     <i class="fas fa-clipboard-list mr-3"></i> Data Seluruh Pengajuan Cuti
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('cuti.formKetuaPengganti') }}"
+                   class="flex items-center px-4 py-2 rounded-md transition duration-200
+                   {{ $currentRoute == 'cuti.formKetuaPengganti' ? 'bg-red-700 font-semibold text-white' : 'text-red-100 hover:bg-red-800' }}">
+                    <i class="fas fa-clipboard-list mr-3"></i> Ganti Ketua
                 </a>
             </li>
         @endif

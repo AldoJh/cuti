@@ -123,6 +123,30 @@ class PengajuanCutiController extends Controller
             break;
     }
 
+    // 🔹 Tentukan approval flow
+    $status = 'diajukan';
+    $approval = $user->atasan_id ?? null;
+    $ketua = User::where('role', 'ketua')->first();
+
+    if ($user->role === 'ketua') {
+        // Kalau ketua yang ajukan → langsung disetujui
+        $status = 'disetujui';
+        $approval = null;
+    } elseif ($user->atasan_id === $ketua?->id ) {
+        // Kalau user tidak punya atasan → cek ketua pengganti atau ketua asli
+        $ketuaPengganti = User::where('is_ketua_pengganti', true)->first();
+        $ketua = User::where('role', 'ketua')->first();
+    
+        if ($ketuaPengganti) {
+            $approval = $ketuaPengganti->id;
+        } else {
+            $approval = $ketua?->id;
+        }
+    } else {
+        // User punya atasan → approval ke atasan
+        $approval = $user->atasan_id;
+    }
+    
     $cuti = Pengajuan_Cuti::create([
         'user_id' => $user->id,
         'jenis_cuti' => $request->jenis_cuti,
@@ -130,8 +154,8 @@ class PengajuanCutiController extends Controller
         'tanggal_selesai' => $request->tanggal_selesai,
         'alasan' => $request->alasan,
         'surat_sakit' => $suratPath,
-        'current_approval_id' => $currentApproval, 
-        'status' => 'diajukan',
+        'current_approval_id' => $approval, 
+        'status' => $status,
     ]);
 
     return redirect()->route('dashboard')->with('success', 'Pengajuan cuti berhasil diajukan.');
@@ -179,28 +203,36 @@ class PengajuanCutiController extends Controller
     {
             $cuti = Pengajuan_Cuti::findOrFail($id);
             $user = auth()->user();
+            $ketua = User::where('role', 'ketua')->first();
 
             if ($cuti->current_approval_id != $user->id) {
                 return redirect()->back()->with('error', 'Anda tidak memiliki hak untuk menyetujui cuti ini.');
             }
 
-            if ($user->role === 'ketua') {
+            if ($user->role === 'ketua' || $user->is_ketua_pengganti) {
                 // Kalau ketua yang approve -> final
                 $cuti->current_approval_id = null;
                 $cuti->status = 'disetujui';
-            } elseif ($user->atasan_id) {
+            } elseif ($user->atasan_id === $ketua?->id) {
+                $ketuaPengganti = User::where('is_ketua_pengganti', true)->first();
+
+                if ($ketuaPengganti) {
+                    // Kalau ada ketua pengganti -> teruskan ke ketua pengganti
+                    $cuti->current_approval_id = $ketuaPengganti->id;
+                    $cuti->status = 'disetujui_atasan';
+                } else {
+                    // Kalau tidak ada ketua pengganti -> teruskan ke ketua asli
+                    $cuti->current_approval_id = $ketua?->id;
+                    $cuti->status = 'disetujui_atasan';
+                }
                 // Kalau masih ada atasan -> teruskan
-                $cuti->current_approval_id = $user->atasan_id;
-                $cuti->status = 'disetujui_atasan';
+                // $cuti->current_approval_id = $user->atasan_id;
+                // $cuti->status = 'disetujui_atasan';
             } else {
                 // Kalau tidak ada atasan -> final
                 $cuti->current_approval_id = null;
                 $cuti->status = 'disetujui';
             }
-            
-            
-            
-
             $cuti->save();
 
             return redirect()->back()->with('success', 'Pengajuan cuti telah disetujui.');
@@ -226,7 +258,7 @@ class PengajuanCutiController extends Controller
 
     public function pengajuan($id)
     {
-        $user = auth()->user();
+    $user = auth()->user();
 
     
     if ($user->id != $id) {
@@ -237,6 +269,7 @@ class PengajuanCutiController extends Controller
     $pengajuanCuti = Pengajuan_Cuti::where('current_approval_id', $user->id)
                         ->orderBy('created_at', 'desc')
                         ->get();
+
 
     return view('dashboard.cuti.pengajuan', compact('pengajuanCuti', 'user'));
     }
@@ -256,11 +289,11 @@ class PengajuanCutiController extends Controller
     
 
     if (is_null($cuti->current_approval_id)) {
-        // Jika belum ada approval → tampilkan dua-duanya
+   
         $showAtasan = true;
         $showKetua = true;
     } elseif ($cuti->current_approval_id == $ketua?->id) {
-        // Jika yang approve adalah ketua → tampilkan ketua
+        
         $showKetua = false;
         $showAtasan = true;
     } else {
@@ -352,5 +385,40 @@ public function editcuti($id)
     $user = User::findOrFail($id);
     return view('dashboard.cuti.edit_cuti', compact('user'));
 }
+
+public function setKetuaPengganti(Request $request)
+{
+    $auth = Auth::user();
+    if ($auth->role !== 'admin') {
+        abort(403, 'Anda tidak memiliki hak untuk menetapkan ketua pengganti.');
+    }
+
+    $request->validate([
+        'user_id' => 'required|exists:users,id',
+    ]);
+
+    // Reset semua ketua pengganti sebelumnya
+    User::where('is_ketua_pengganti', true)->update(['is_ketua_pengganti' => false]);
+
+    // Set user baru jadi ketua pengganti
+    $user = User::findOrFail($request->user_id);
+    $user->is_ketua_pengganti = true;
+    $user->save();
+
+    return back()->with('success', $user->name . ' ditetapkan sebagai Ketua Pengganti.');
+}
+
+
+public function formKetuaPengganti()
+{
+    $auth = Auth::user();
+    if ($auth->role !== 'admin') {
+        abort(403, 'Anda tidak memiliki hak untuk mengatur ketua pengganti.');
+    }
+
+    $users = User::where('role', '!=', 'admin')->get(); // ambil semua user kecuali admin
+    return view('dashboard.cuti.ketua_pengganti', compact('users'));
+}
+
 
 }

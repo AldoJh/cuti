@@ -41,4 +41,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/cuti/all', [PengajuanCutiController::class, 'allpengajuan'])->name('cuti.all');
     Route::put('/{id}/update-cuti', [PengajuanCutiController::class, 'updateCuti'])->name('updateCuti');
     Route::get('/cuti/edit/{id}', [PengajuanCutiController::class, 'editcuti'])->name('cuti.edit');
+    Route::get('/cuti/ketua-pengganti', [PengajuanCutiController::class, 'formKetuaPengganti'])->name('cuti.formKetuaPengganti');
+    Route::post('/cuti/ketua-pengganti', [PengajuanCutiController::class, 'setKetuaPengganti'])->name('cuti.setKetuaPengganti');
 });

@@ -21,17 +21,17 @@ return new class extends Migration
             $table->string('golongan')->nullable();
             $table->date('tanggal_masuk')->nullable();
             $table->enum('role', [
-                'admin',          // untuk akses penuh sistem
-                'ketua',          // Ketua Pengadilan
-                'hakim',          // Hakim
-                'panitera',       // Panitera
-                'panmud',         // Panitera Muda
-                'panitera_pengganti', // Panitera Pengganti
-                'sekretaris',     // Sekretaris
-                'kasubbag',       // Kepala Sub Bagian
+                'admin',          
+                'ketua',          
+                'hakim',          
+                'panitera',      
+                'panmud',         
+                'panitera_pengganti', 
+                'sekretaris',     
+                'kasubbag',       
                 'ppnpn',
-                'bakti'       // ppnpn biasa atau staf
-            ])->default('ppnpn'); // Role untuk akses sistem
+                'bakti'       
+            ])->default('ppnpn'); 
             $table->unsignedBigInteger('atasan_id')->nullable();
             $table->foreign('atasan_id')->references('id')->on('users')->onDelete('set null');
             $table->integer('sisa_cuti_sakit_bulan_lalu')->default(0);
@@ -43,8 +43,8 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
             $table->integer('sisa_cuti_tahunan')->default(12); 
-            $table->integer('sisa_cuti_sakit')->default(14);   
-
+            $table->integer('sisa_cuti_sakit')->default(14);
+            $table->boolean('is_ketua_pengganti')->default(false);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
