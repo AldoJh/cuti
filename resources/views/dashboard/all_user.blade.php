@@ -3,21 +3,22 @@
 @section('content')
 <div class="p-6 max-w-6xl mx-auto">
     {{-- Header --}}
-    <div class="flex justify-between items-center mb-5">
+    <div class="bg-gradient-to-b from-orange-500 to-red-900 rounded-xl shadow-lg p-6 mb-6 flex items-center justify-between transition hover:scale-[1.01] hover:shadow-xl">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800">Daftar User</h1>
-            <p class="text-sm text-gray-500">Informasi detail user dan role pegawai</p>
+            <h1 class="text-2xl font-bold text-white drop-shadow">Daftar User</h1>
+            <p class="text-sm text-red-100">Informasi detail user dan role pegawai</p>
         </div>
         <a href="{{ route('create-user') }}"
-            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow transition">
+            class="px-5 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-700 text-white font-semibold shadow-md hover:shadow-lg transition hover:scale-[1.03]">
             + Tambah User
         </a>
+
     </div>
 
     {{-- Tabel --}}
     <div class="overflow-x-auto bg-white rounded-xl shadow-lg border border-gray-200">
         <table class="min-w-full divide-y divide-gray-200 text-sm">
-            <thead class="bg-red-600 text-white">
+            <thead class="bg-gradient-to-r from-orange-500 to-red-900 text-white">
                 <tr>
                     <th class="px-3 py-3 text-center font-semibold">#</th>
                     <th class="px-4 py-3 text-left font-semibold">Nama</th>
@@ -27,19 +28,19 @@
                     <th class="px-4 py-3 text-left font-semibold">Atasan</th>
                     <th class="px-4 py-3 text-left font-semibold">Email</th>
                     <th class="px-4 py-3 text-center font-semibold">TTD</th>
-                    <th class="px-4 py-3 text-center font-semibold">Sisa cuti tahunan</th>
-                    <th class="px-4 py-3 text-center font-semibold">Sisa cuti sakit</th>
+                    <th class="px-4 py-3 text-center font-semibold">Sisa Cuti Tahunan</th>
+                    <th class="px-4 py-3 text-center font-semibold">Sisa Cuti Sakit</th>
                     <th class="px-4 py-3 text-center font-semibold">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
                 @forelse($users as $key => $u)
-                <tr class="hover:bg-gray-50 transition">
+                <tr class="hover:bg-orange-50 transition">
                     <td class="px-3 py-2 text-center font-semibold">{{ $key+1 }}</td>
-                    <td class="px-4 py-2 font-medium text-gray-700">{{ $u->name }}</td>
+                    <td class="px-4 py-2 font-medium text-gray-800">{{ $u->name }}</td>
                     <td class="px-4 py-2">{{ $u->nip ?? '-' }}</td>
                     <td class="px-4 py-2">{{ $u->jabatan ?? '-' }}</td>
-                    <td class="px-4 py-2 text-center capitalize">{{ $u->role }}</td>
+                    <td class="px-4 py-2 text-center capitalize text-gray-700">{{ $u->role }}</td>
                     <td class="px-4 py-2">{{ $u->atasan?->name ?? '-' }}</td>
                     <td class="px-4 py-2">{{ $u->email }}</td>
                     <td class="px-4 py-2 text-center">
@@ -49,27 +50,24 @@
                             <span class="text-gray-400 italic">Belum ada</span>
                         @endif
                     </td>
-                    <td class="px-4 py-2 text-center">{{ $u->sisa_cuti_tahunan ?? 0 }} hari</td>
-                    <td class="px-4 py-2 text-center">{{ $u->sisa_cuti_sakit ?? 0 }} hari</td>
+                    <td class="px-4 py-2 text-center text-green-600 font-semibold">{{ $u->sisa_cuti_tahunan ?? 0 }} hari</td>
+                    <td class="px-4 py-2 text-center text-blue-600 font-semibold">{{ $u->sisa_cuti_sakit ?? 0 }} hari</td>
                     <td class="px-4 py-2 text-center">
                         <div class="flex items-center justify-center space-x-2">
                             <a href="{{ route('cuti.edit', $u->id) }}"
-                                class="px-3 py-1 text-sm text-white bg-green-600 rounded hover:bg-green-700 transition">
-                                Edit Sisa Cuti
+                                class="px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-lg shadow hover:bg-green-700 transition">
+                                Edit Cuti
                             </a>
-                    
                             <a href="{{ route('edit-user', $u->id) }}"
-                                class="px-3 py-1 text-sm text-black bg-blue-600 rounded hover:bg-blue-700 transition">
+                                class="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 transition">
                                 Edit User
                             </a>
                         </div>
                     </td>
-                    
-                    
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="text-center px-4 py-4 text-gray-500">Tidak ada user ditemukan</td>
+                    <td colspan="11" class="text-center px-4 py-6 text-gray-500">Tidak ada user ditemukan</td>
                 </tr>
                 @endforelse
             </tbody>

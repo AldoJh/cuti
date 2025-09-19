@@ -34,15 +34,7 @@ if (in_array(auth()->user()->role, $rolesAtasan)) {
     }
 
     .notif-badge {
-        animation: smooth-shake 1s ease-in-out infinite;
-        animation-play-state: running;
-        animation-delay: 0s;
-        animation-iteration-count: infinite;
-        animation-direction: normal;
-    }
-
-    .notif-badge {
-        animation-duration: 2s;
+        animation: smooth-shake 2s ease-in-out infinite;
     }
 </style>
 
@@ -51,17 +43,17 @@ if (in_array(auth()->user()->role, $rolesAtasan)) {
 
 <!-- Sidebar -->
 <div id="sidebar"
-     class="bg-[#941824] shadow-lg min-h-screen fixed lg:static left-0 top-0 w-64 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50 flex flex-col">
-    
+     class="bg-[#992103] shadow-lg min-h-screen fixed lg:static left-0 top-0 w-64 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50 flex flex-col">
+
     <!-- Logo & Title -->
-    <div class="flex flex-col items-center p-6 border-b border-red-900">
+    <div class="flex flex-col items-center p-6 border-b border-[#7a1a00]">
         <img src="{{ asset('images/logopnrm.png') }}" alt="Logo PN" class="w-16 mb-2">
         <h1 class="text-white font-bold text-lg tracking-wide">WEB-CUTI | PN</h1>
     </div>
 
     <!-- User Info -->
-    <div class="flex items-center space-x-3 px-6 py-4 border-b border-red-900">
-        <div class="bg-red-900 text-white rounded-full w-10 h-10 flex items-center justify-center font-semibold">
+    <div class="flex items-center space-x-3 px-6 py-4 border-b border-[#7a1a00]">
+        <div class="bg-[#7a1a00] text-white rounded-full w-10 h-10 flex items-center justify-center font-semibold">
             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
         </div>
         <div>
@@ -149,7 +141,7 @@ if (in_array(auth()->user()->role, $rolesAtasan)) {
                 <a href="{{ route('cuti.formKetuaPengganti') }}"
                    class="flex items-center px-4 py-2 rounded-md transition duration-200
                    {{ $currentRoute == 'cuti.formKetuaPengganti' ? 'bg-red-700 font-semibold text-white' : 'text-red-100 hover:bg-red-800' }}">
-                    <i class="fas fa-clipboard-list mr-3"></i> Ganti Ketua
+                    <i class="fas fa-user-shield mr-3"></i> Ganti Ketua
                 </a>
             </li>
         @endif

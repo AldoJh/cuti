@@ -3,20 +3,30 @@
 @section('content')
 <div class="p-6">
     <!-- Ucapan Selamat Datang -->
-    <div class="bg-gradient-to-r from-red-500 via-red-600 to-red-700 rounded-xl shadow-lg p-4 flex flex-col sm:flex-row items-center justify-between mb-6 transition duration-300 hover:scale-[1.01]">
+    <div class="bg-gradient-to-b from-orange-500 to-red-900 rounded-xl shadow-lg p-6 flex flex-col sm:flex-row items-center justify-between mb-6 transition duration-300 hover:scale-[1.01] hover:shadow-xl">
         <div>
-            <h1 class="text-2xl font-bold text-white tracking-wide">Dashboard</h1>
+            <h1 class="text-2xl font-bold text-white tracking-wide drop-shadow">
+                Dashboard
+            </h1>
             <p class="text-white text-base mt-1">
-                Selamat datang, <span class="font-semibold underline decoration-yellow-300">{{ Auth::user()->name }}</span> 👋
+                Selamat datang, 
+                <span class="font-semibold underline decoration-yellow-300">
+                    {{ Auth::user()->name }}
+                </span> 👋
             </p>
             <p class="text-red-100 text-sm mt-1">
-                Silakan pilih menu <span class="font-semibold">pengajuan cuti</span> atau <span class="font-semibold">persetujuan cuti</span>.
+                Silakan pilih menu 
+                <span class="font-semibold">pengajuan cuti</span> atau 
+                <span class="font-semibold">persetujuan cuti</span>.
             </p>
         </div>
         <div class="hidden sm:block">
-            <img src="{{ asset('images/logopnrm.png') }}" alt="Logo PN" class="w-20 h-20 drop-shadow-md">
+            <img src="{{ asset('images/logopnrm.png') }}" 
+                alt="Logo PN" 
+                class="w-20 h-20 drop-shadow-lg rounded-full ring-2 ring-white/50">
         </div>
     </div>
+
 
     <!-- Card Sisa Cuti -->
     @if(!in_array(Auth::user()->role, ['admin']))

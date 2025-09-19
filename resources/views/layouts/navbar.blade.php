@@ -1,4 +1,4 @@
-<nav class="bg-[#a10817] text-white flex justify-between items-center px-6 py-3 shadow">
+<nav class="bg-gradient-to-r from-orange-600 to-red-800 text-white flex justify-between items-center px-6 py-3 shadow">
     <!-- Hamburger Mobile (kiri) -->
     <div class="flex items-center">
         <button id="hamburger" class="lg:hidden focus:outline-none">
