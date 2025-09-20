@@ -61,4 +61,9 @@ class User extends Authenticatable
 {
     return $this->belongsTo(User::class, 'atasan_id');
 }
+
+public function pengajuanCuti()
+{
+    return $this->hasMany(\App\Models\pengajuan_cuti::class, 'user_id');
+}
 }

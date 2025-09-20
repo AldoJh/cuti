@@ -44,4 +44,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/cuti/ketua-pengganti', [PengajuanCutiController::class, 'formKetuaPengganti'])->name('cuti.formKetuaPengganti');
     Route::post('/cuti/ketua-pengganti', [PengajuanCutiController::class, 'setKetuaPengganti'])->name('cuti.setKetuaPengganti');
     Route::get('/pengajuan-cuti/export', [PengajuanCutiController::class, 'export'])->name('pengajuan-cuti.export');
+    Route::get('/cuti/export/{user_id}', [PengajuanCutiController::class, 'exportByUser'])->name('cuti.exportByUser');
 });

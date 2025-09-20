@@ -48,7 +48,7 @@ if (in_array(auth()->user()->role, $rolesAtasan)) {
     <!-- Logo & Title -->
     <div class="flex flex-col items-center p-6 border-b border-[#7a1a00]">
         <img src="{{ asset('images/logopnrm.png') }}" alt="Logo PN" class="w-16 mb-2">
-        <h1 class="text-white font-bold text-lg tracking-wide">WEB-CUTI | PN</h1>
+        <h1 class="text-white font-bold text-lg tracking-wide">SIM-C | PN</h1>
     </div>
 
     <!-- User Info -->

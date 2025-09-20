@@ -424,9 +424,32 @@ public function formKetuaPengganti()
 
 // export function
 public function export()
-    {
-        return Excel::download(new PengajuanCutiExport, 'pengajuan_cuti.xlsx');
+{
+    return Excel::download(new PengajuanCutiExport, 'pengajuan_cuti.xlsx');
+}
+
+// export by user function
+public function exportByUser($user_id)
+{
+    // Cari user
+    $user = User::find($user_id);
+    if (!$user) {
+         return redirect()->back()->with('error', 'User tidak ditemukan.');
     }
 
+    // Ambil data cuti milik user
+    $cutis = pengajuan_cuti::with(['user', 'approval'])
+        ->where('user_id', $user_id)
+        ->get();
+
+    if ($cutis->isEmpty()) {
+        return redirect()->back()->with('error', 'User ini belum memiliki data cuti.');
+    }
+
+    // Nama file dinamis pakai nama user
+    $filename = 'pengajuan_cuti_' . str_replace(' ', '_', strtolower($user->name)) . '.xlsx';
+
+    return Excel::download(new PengajuanCutiExport($cutis), $filename);
+}
 
 }

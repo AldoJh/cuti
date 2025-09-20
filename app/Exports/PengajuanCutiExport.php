@@ -8,19 +8,32 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class PengajuanCutiExport implements FromCollection, WithHeadings
 {
+    protected $cutis;
+
+    /**
+     * Terima collection data cuti dari controller
+     * Bisa semua data, bisa juga per user.
+     */
+    public function __construct($cutis = null)
+    {
+        // Kalau tidak dikirim dari controller, ambil semua data default
+        $this->cutis = $cutis ?? pengajuan_cuti::with(['user', 'approval'])->get();
+    }
+
     public function collection()
     {
-        return pengajuan_cuti::with(['user', 'approval'])->get()->map(function($item){
+        return $this->cutis->map(function($item){
             return [
-                'ID' => $item->id,
-                'Nama Pegawai' => $item->user ? $item->user->name : '-',
-                'Tanggal Mulai' => $item->tanggal_mulai,
-                'Tanggal Selesai' => $item->tanggal_selesai,
-                'Jenis Cuti' => $item->jenis_cuti,
-                'Alasan' => $item->alasan,
-                'Surat Sakit' => $item->surat_sakit ?? '-',
-                'Status' => $item->status,
-                'Approval Saat Ini' => $item->approval ? $item->approval->name : '-',
+                'ID'               => $item->id,
+                'Nama Pegawai'     => $item->user->name ?? '-',
+                'Jabatan'          => $item->user->jabatan ?? '-',
+                'Jenis Cuti'       => $item->jenis_cuti,
+                'Tanggal Mulai'    => $item->tanggal_mulai,
+                'Tanggal Selesai'  => $item->tanggal_selesai,
+                'Alasan'           => $item->alasan,
+                'Surat Sakit'      => $item->surat_sakit ?? '-',
+                'Approval'         => $item->approval->name ?? '-',
+                'Status'           => ucfirst($item->status),
             ];
         });
     }
@@ -30,13 +43,14 @@ class PengajuanCutiExport implements FromCollection, WithHeadings
         return [
             'ID',
             'Nama Pegawai',
+            'Jabatan',
+            'Jenis Cuti',
             'Tanggal Mulai',
             'Tanggal Selesai',
-            'Jenis Cuti',
             'Alasan',
             'Surat Sakit',
+            'Approval',
             'Status',
-            'Approval Saat Ini',
         ];
     }
 }
