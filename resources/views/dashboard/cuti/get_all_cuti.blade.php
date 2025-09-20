@@ -8,10 +8,11 @@
             <h1 class="text-2xl font-bold text-white drop-shadow">Daftar Cuti Pegawai</h1>
             <p class="text-sm text-red-100">Riwayat cuti beserta status approval dan periode cuti</p>
         </div>
-        {{-- <a href="{{ route('cutis.create') }}"
-           class="px-5 py-2 rounded-lg bg-white/20 text-white font-medium shadow hover:bg-white/30 backdrop-blur-md transition">
-            + Tambah Cuti
-        </a> --}}
+        {{-- Tombol Export Excel --}}
+        <a href="{{ route('pengajuan-cuti.export') }}"
+           class="px-4 py-2 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white font-medium shadow transition flex items-center gap-2">
+            <i class="fas fa-file-excel"></i> Export ke Excel
+        </a>
     </div>
 
     {{-- Tabel --}}

@@ -10,6 +10,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB; 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Exports\PengajuanCutiExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PengajuanCutiController extends Controller
 {
@@ -419,6 +421,12 @@ public function formKetuaPengganti()
     $users = User::where('role', '!=', 'admin')->get(); // ambil semua user kecuali admin
     return view('dashboard.cuti.ketua_pengganti', compact('users'));
 }
+
+// export function
+public function export()
+    {
+        return Excel::download(new PengajuanCutiExport, 'pengajuan_cuti.xlsx');
+    }
 
 
 }
