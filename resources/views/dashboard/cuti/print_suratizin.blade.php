@@ -163,7 +163,7 @@
     </div>
 
     <!-- JUDUL SURAT -->
-    <div class="surat-title">SURAT IZIN CUTI TAHUNAN</div>
+    <div class="surat-title">SURAT IZIN CUTI {{ strtoupper($cuti->jenis_cuti) }}</div>
     <div class="surat-number">
         Nomor: <span style="display:inline-block; width:30px;"></span> /KPN.WI.U2/KP5.3/V/2025
     </div>
