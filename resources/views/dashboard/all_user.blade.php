@@ -12,7 +12,6 @@
             class="px-5 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-700 text-white font-semibold shadow-md hover:shadow-lg transition hover:scale-[1.03]">
             + Tambah User
         </a>
-
     </div>
 
     {{-- Tabel --}}
@@ -30,6 +29,7 @@
                     <th class="px-4 py-3 text-center font-semibold">TTD</th>
                     <th class="px-4 py-3 text-center font-semibold">Sisa Cuti Tahunan</th>
                     <th class="px-4 py-3 text-center font-semibold">Sisa Cuti Sakit</th>
+                    <th class="px-4 py-3 text-center font-semibold">Status</th>
                     <th class="px-4 py-3 text-center font-semibold">Aksi</th>
                 </tr>
             </thead>
@@ -52,6 +52,20 @@
                     </td>
                     <td class="px-4 py-2 text-center text-green-600 font-semibold">{{ $u->sisa_cuti_tahunan ?? 0 }} hari</td>
                     <td class="px-4 py-2 text-center text-blue-600 font-semibold">{{ $u->sisa_cuti_sakit ?? 0 }} hari</td>
+
+                    {{-- 🔥 STATUS --}}
+                    <td class="px-4 py-2 text-center">
+                        @if($u->status == 1)
+                            <span class="px-3 py-1 text-sm rounded-lg bg-green-100 text-green-700 font-medium shadow">
+                                Aktif
+                            </span>
+                        @else
+                            <span class="px-3 py-1 text-sm rounded-lg bg-red-100 text-red-700 font-medium shadow">
+                                Non Aktif
+                            </span>
+                        @endif
+                    </td>
+
                     <td class="px-4 py-2 text-center">
                         <div class="flex items-center justify-center space-x-2">
                             <a href="{{ route('cuti.edit', $u->id) }}"
@@ -67,7 +81,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="11" class="text-center px-4 py-6 text-gray-500">Tidak ada user ditemukan</td>
+                    <td colspan="12" class="text-center px-4 py-6 text-gray-500">Tidak ada user ditemukan</td>
                 </tr>
                 @endforelse
             </tbody>

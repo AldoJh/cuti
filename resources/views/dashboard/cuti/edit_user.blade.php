@@ -118,6 +118,20 @@
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
         </div>
 
+        {{-- Status --}}
+        <div class="mb-5">
+    <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
+        Status
+    </label>
+    <select name="status" id="status" required
+        class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm p-2.5 shadow-sm">
+        <option value="1" {{ $editUser->status == 1 ? 'selected' : '' }}>✅ Aktif</option>
+        <option value="0" {{ $editUser->status == 0 ? 'selected' : '' }}>⛔ Non Aktif</option>
+    </select>
+</div>
+
+
+
         {{-- TTD --}}
         <div>
             <label for="ttd" class="block text-gray-700 font-medium mb-1">Tanda Tangan (TTD)</label>
@@ -132,7 +146,7 @@
         {{-- Tombol Simpan --}}
         <div class="flex justify-end">
             <button type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-black px-5 py-2 rounded-lg shadow transition">
+                class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow transition">
                 Update
             </button>
         </div>

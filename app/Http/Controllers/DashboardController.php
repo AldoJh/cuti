@@ -161,8 +161,7 @@ class DashboardController extends Controller
         }
         
     }
-
-    // update user
+// update user
 public function update_user(Request $request, $id)
 {
     $user = Auth::user();
@@ -183,6 +182,7 @@ public function update_user(Request $request, $id)
         'tanggal_masuk' => 'nullable|date',
         'email'         => 'required|email|unique:users,email,' . $id,
         'ttd'           => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'status'        => 'required|in:0,1', // ✅ validasi status
     ]);
 
     // ambil user
@@ -199,6 +199,7 @@ public function update_user(Request $request, $id)
     $editUser->golongan      = $request->golongan;
     $editUser->tanggal_masuk = $request->tanggal_masuk;
     $editUser->email         = $request->email;
+    $editUser->status        = $request->status; // ✅ update status
 
     // upload TTD kalau ada
     if ($request->hasFile('ttd')) {
