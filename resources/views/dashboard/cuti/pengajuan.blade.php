@@ -43,6 +43,7 @@
                         <th class="px-4 py-3 text-left text-xs font-semibold text-white">Mulai</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-white">Selesai</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-white">Alasan</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-white">Berkas</th>                        
                         <th class="px-4 py-3 text-left text-xs font-semibold text-white">Surat</th>
                         <th class="px-4 py-3 text-center text-xs font-semibold text-white">Aksi</th>
                     </tr>
@@ -55,6 +56,26 @@
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $cuti->tanggal_mulai }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $cuti->tanggal_selesai }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $cuti->alasan }}</td>
+
+                            {{-- 📄 Kolom Berkas Form dan Surat Izin --}}
+                            <td class="px-4 py-3 text-sm text-gray-700">
+                                <div class="flex flex-col gap-2">
+                                    <a href="{{ route('cuti.print_form', $cuti->id) }}" target="_blank"
+                                       class="inline-flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium text-white
+                                              bg-gradient-to-r from-red-600 to-red-800 rounded-lg shadow 
+                                              hover:from-red-700 hover:to-red-900 transition transform hover:scale-[1.05]">
+                                        🖨️ Form Cuti
+                                    </a>
+                                    <a href="{{ route('cuti.print_izin', $cuti->id) }}" target="_blank"
+                                       class="inline-flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium text-white
+                                              bg-gradient-to-r from-orange-500 to-yellow-600 rounded-lg shadow 
+                                              hover:from-orange-600 hover:to-yellow-700 transition transform hover:scale-[1.05]">
+                                        🖨️ Surat Izin
+                                    </a>
+                                </div>
+                            </td>
+
+                            {{-- 📎 Kolom Surat Sakit --}}
                             <td class="px-4 py-3 text-center">
                                 @if($cuti->surat_sakit)
                                     <a href="{{ asset('storage/' . $cuti->surat_sakit) }}" 
@@ -62,13 +83,7 @@
                                     class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white 
                                             bg-gradient-to-r from-blue-500 to-indigo-500 
                                             rounded-lg shadow hover:from-blue-600 hover:to-indigo-600 transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" 
-                                            fill="none" viewBox="0 0 24 24" stroke-width="1.5" 
-                                            stroke="currentColor" class="w-4 h-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" 
-                                                d="M12 4.5v15m7.5-7.5h-15" />
-                                        </svg>
-                                        Lihat Surat
+                                        📄 Lihat Surat
                                     </a>
                                 @else
                                     <span class="px-3 py-1 text-xs text-gray-500 bg-gray-100 rounded-md shadow-sm">
@@ -76,6 +91,8 @@
                                     </span>
                                 @endif
                             </td>
+
+                            {{-- 🛠️ Kolom Aksi --}}
                             <td class="px-4 py-3 text-center flex space-x-2 justify-center">
                                 {{-- Tombol Setujui --}}
                                 <form action="{{ route('cuti.approve', $cuti->id) }}" method="POST">
