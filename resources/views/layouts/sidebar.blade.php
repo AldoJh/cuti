@@ -1,5 +1,5 @@
 @php
-use App\Models\pengajuan_cuti;
+use App\Models\Pengajuan_Cuti;
 
 $rolesAtasan = ['panitera', 'sekretaris', 'ketua', 'hakim'];
 $rolesAdmin = ['admin', 'superadmin'];
