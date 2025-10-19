@@ -1,0 +1,8 @@
+content-Type: application/json
+Content-Length: 968
+Access-Control-Allow-Origin: *
+Cache-Control: no-cache, private
+Vary: Origin
+Vary: Accept-Encoding
+
+{"data":[{"id":"3f9a5df1-b9ab-4e15-99c4-242a4d1c4bb4","nama":"Aldo Januansyah H","email":"aldo1212lsm@gmail.com","telepon":"081374517354","alamat":"Jl. Telaga Said Gg. Sepakat","id_desa":null,"tempat_lahir":"P Berandan","tanggal_lahir":"2003-01-18","tentang_saya":null,"foto":"https:\/\/api.kemnaker.go.id\/profile\/v1\/profiles\/c3e704f0-c24e-463c-aacd-e3c2def4f343\/picture","id_perusahaan":null,"id_satuan_kerja":null,"email_verified_at":null,"remember_token":null,"created_at":"2025-10-14 19:53:29","updated_at":null,"id_peran":"ca553204-567c-44aa-be13-f0836af786b2","id_jenis_kelamin":10,"id_golongan_darah":null,"id_kabupaten":null,"id_propinsi":null,"alamat_domisili":"Jl. Telaga Said Gg. Sepakat","catatan_validasi":null,"revisi":null,"ref_peran":{"id_peran":"ca553204-567c-44aa-be13-f0836af786b2","nama_peran":"Peserta"},"perusahaan":{"id_perusahaan":null,"nama_perusahaan":null,"logo":null},"satuan_kerja":{"id_satuan_kerja":null,"nama_satuan_kerja":null}}]}

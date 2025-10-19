@@ -53,7 +53,7 @@ class DashboardController extends Controller
 
     foreach ($users as $user) {
         // Total cuti tahunan yang sudah diambil tahun ini
-        $totalTahunan = \App\Models\Pengajuan_Cuti::where('user_id', $user->id)
+        $totalTahunan = \App\Models\pengajuan_cuti::where('user_id', $user->id)
             ->where('jenis_cuti', 'tahunan')
             ->whereYear('tanggal_mulai', $tahunIni)
             ->sum(\DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
@@ -65,7 +65,7 @@ class DashboardController extends Controller
         $sisaCutiTahunan = max($kuotaTahunan - $totalTahunan, 0);
 
         // Total cuti sakit yang sudah diambil tahun ini
-        $totalSakit = \App\Models\Pengajuan_Cuti::where('user_id', $user->id)
+        $totalSakit = \App\Models\pengajuan_cuti::where('user_id', $user->id)
             ->where('jenis_cuti', 'sakit')
             ->whereYear('tanggal_mulai', $tahunIni)
             ->sum(\DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
