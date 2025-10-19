@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class pengajuan_cuti extends Model
+class Pengajuan_Cuti extends Model
 {
     /** @use HasFactory<\Database\Factories\PengajuanCutiFactory> */
     use HasFactory;
+
+    protected $table = 'pengajuan_cutis';
     
     protected $fillable = [
         'user_id',

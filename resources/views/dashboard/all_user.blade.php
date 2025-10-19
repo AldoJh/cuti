@@ -26,7 +26,7 @@
                     <th class="px-4 py-3 text-center font-semibold">Role</th>
                     <th class="px-4 py-3 text-left font-semibold">Atasan</th>
                     <th class="px-4 py-3 text-left font-semibold">Email</th>
-                    <th class="px-4 py-3 text-center font-semibold">TTD</th>
+                    <!-- <th class="px-4 py-3 text-center font-semibold">TTD</th> -->
                     <th class="px-4 py-3 text-center font-semibold">Sisa Cuti Tahunan</th>
                     <th class="px-4 py-3 text-center font-semibold">Sisa Cuti Sakit</th>
                     <th class="px-4 py-3 text-center font-semibold">Status</th>
@@ -43,13 +43,13 @@
                     <td class="px-4 py-2 text-center capitalize text-gray-700">{{ $u->role }}</td>
                     <td class="px-4 py-2">{{ $u->atasan?->name ?? '-' }}</td>
                     <td class="px-4 py-2">{{ $u->email }}</td>
-                    <td class="px-4 py-2 text-center">
+                    <!-- <td class="px-4 py-2 text-center">
                         @if($u->ttd_path)
                             <img src="{{ asset('storage/'.$u->ttd_path) }}" alt="TTD" class="h-10 mx-auto rounded shadow">
                         @else
                             <span class="text-gray-400 italic">Belum ada</span>
                         @endif
-                    </td>
+                    </td> -->
                     <td class="px-4 py-2 text-center text-green-600 font-semibold">{{ $u->sisa_cuti_tahunan ?? 0 }} hari</td>
                     <td class="px-4 py-2 text-center text-blue-600 font-semibold">{{ $u->sisa_cuti_sakit ?? 0 }} hari</td>
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\pengajuan_cuti;
+use App\Models\Pengajuan_Cuti;
 use App\Http\Requests\Storepengajuan_cutiRequest;
 use App\Http\Requests\Updatepengajuan_cutiRequest;
 use Illuminate\Support\Facades\Auth;
