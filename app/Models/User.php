@@ -32,6 +32,7 @@ class User extends Authenticatable
         'tanggal_masuk',
         'sisa_cuti_sakit_bulan_lalu',
         'sisa_cuti_tahunan_bulan_lalu',
+        'status',
     ];
 
     /**
