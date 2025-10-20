@@ -212,5 +212,25 @@ public function update_user(Request $request, $id)
     return redirect()->route('edit-user', $id)->with('success', 'Data user berhasil diperbarui.');
 }
 
+public function update_user_password(Request $request, $id)
+{
+    $user = Auth::user();
+    if ($user->role !== 'admin') {
+        return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses fitur ini.');
+    }
+
+    $request->validate([
+        'password' => 'required|string|min:8|confirmed',
+    ]);
+
+    $editUser = User::findOrFail($id);
+    $editUser->password = Hash::make($request->password);
+    $editUser->save();
+
+    return redirect()->route('edit-user', $id)->with('password_success', 'Password berhasil diperbarui.');
+
+}
+
+
 
 }

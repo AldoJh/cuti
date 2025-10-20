@@ -76,6 +76,10 @@
                                 class="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 transition">
                                 Edit User
                             </a>
+                            <a href="{{ route('edit-user-password', $u->id) }}"
+                                class="px-3 py-1 text-sm font-medium text-white bg-yellow-500 rounded-lg shadow hover:bg-yellow-600 transition">
+                                Edit Password
+                            </a>
                         </div>
                     </td>
                 </tr>

@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PengajuanCutiController;
+use App\Http\Controllers\UserController;
 
 // Halaman Publik (tanpa login)
 Route::get('/home', function () {
@@ -26,7 +27,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/all-user',[DashboardController::class, 'getalluser'])->name('get-all-user');
     Route::get('/edit-user/{id}', [DashboardController::class, 'edit_user'])->name('edit-user');
     Route::put('/update-user/{id}', [DashboardController::class, 'update_user'])->name('update-user');
+    Route::get('/dashboard/user/{id}/edit-password', [UserController::class, 'editPassword']) ->name('edit-user-password');
+    Route::put('/dashboard/user/{id}/update-password', [UserController::class, 'updatePassword']) ->name('update-user-password');
 });
+
 
 // Rute untuk pengajuan cuti
 Route::middleware(['auth'])->group(function () {
