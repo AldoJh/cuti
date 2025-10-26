@@ -5,85 +5,86 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pengajuan_Cuti;
 use App\Models\User;
+use App\Models\BackupCutiTahunan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class DashboardController extends Controller
 {
+    // Dashboard user
     public function index()
     {
         $user = Auth::user();
         $tahunIni = Carbon::now()->year;
 
-        // ===== Hitung total cuti tahunan yang sudah diambil tahun ini =====
+        // Hitung cuti tahunan
         $totalTahunan = Pengajuan_Cuti::where('user_id', $user->id)
             ->where('jenis_cuti', 'tahunan')
             ->whereYear('tanggal_mulai', $tahunIni)
             ->sum(DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
 
-        // Ambil sisa cuti tahun sebelumnya (maks 6 hari jika tidak ditangguhkan)
         $sisaCutiLalu = $user->sisa_cuti_tahun_lalu ?? 0;
-        $sisaCutiLalu = min($sisaCutiLalu, 6); // bisa 24 jika ditangguhkan
-
+        $sisaCutiLalu = min($sisaCutiLalu, 6); // maksimal 6 hari
         $kuotaTahunan = 12 + $sisaCutiLalu;
         $sisaCutiTahunan = max($kuotaTahunan - $totalTahunan, 0);
 
-        // ===== Hitung total cuti sakit yang sudah diambil tahun ini =====
+        // Hitung cuti sakit
         $totalSakit = Pengajuan_Cuti::where('user_id', $user->id)
             ->where('jenis_cuti', 'sakit')
             ->whereYear('tanggal_mulai', $tahunIni)
             ->sum(DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
 
-        $kuotaSakit = 14; // cuti sakit biasa
+        $kuotaSakit = 14;
         $sisaCutiSakit = max($kuotaSakit - $totalSakit, 0);
 
         return view('dashboard.index', compact('user', 'sisaCutiTahunan', 'sisaCutiSakit'));
     }
 
-    public function all_cuti()
-{
-    // Ambil semua user yang bukan admin atau ketua (pegawai/PPNPN)
-    $users = \App\Models\User::whereIn('role', ['pegawai', 'ppnpn', 'atasan', 'hakim', 'panitera', 'panmud', 'panitera_pengganti', 'sekretaris', 'kasubbag', 'ketua'])
-                ->get();
+    // Semua cuti user dengan filter tahun & bulan
+    public function all_cuti(Request $request)
+    {
+        $tahun = $request->input('tahun', Carbon::now()->year);
+        $bulan = $request->input('bulan'); // optional
 
-    $tahunIni = \Carbon\Carbon::now()->year;
-    $cutiData = [];
+        // Ambil semua user yang relevan
+        $users = User::whereIn('role', [
+            'pegawai','ppnpn','atasan','hakim','panitera','panmud',
+            'panitera_pengganti','sekretaris','kasubbag','ketua'
+        ])->with(['pengajuanCuti' => function($q) use ($tahun, $bulan) {
+            $q->when($tahun, fn($q) => $q->whereYear('tanggal_mulai', $tahun))
+              ->when($bulan, fn($q) => $q->whereMonth('tanggal_mulai', $bulan));
+        }])->get();
 
-    foreach ($users as $user) {
-        // Total cuti tahunan yang sudah diambil tahun ini
-        $totalTahunan = \App\Models\Pengajuan_Cuti::where('user_id', $user->id)
-            ->where('jenis_cuti', 'tahunan')
-            ->whereYear('tanggal_mulai', $tahunIni)
-            ->sum(\DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
+        // Siapkan data cuti
+        $cutiData = $users->map(function($user) use ($tahun) {
+            $backup = BackupCutiTahunan::where('user_id', $user->id)
+                        ->where('tahun', $tahun)
+                        ->first();
 
-        $sisaCutiLalu = $user->sisa_cuti_tahun_lalu ?? 0;
-        $sisaCutiLalu = min($sisaCutiLalu, 6); // 6 jika tidak ditangguhkan, 24 jika ditangguhkan
+            return [
+                'user' => $user,
+                'sisa_cuti_tahunan' => $backup?->sisa_cuti_tahunan ?? 0,
+                'sisa_cuti_sakit' => $backup?->sisa_cuti_sakit ?? 0,
+            ];
+        });
 
-        $kuotaTahunan = 12 + $sisaCutiLalu;
-        $sisaCutiTahunan = max($kuotaTahunan - $totalTahunan, 0);
-
-        // Total cuti sakit yang sudah diambil tahun ini
-        $totalSakit = \App\Models\pengajuan_cuti::where('user_id', $user->id)
-            ->where('jenis_cuti', 'sakit')
-            ->whereYear('tanggal_mulai', $tahunIni)
-            ->sum(\DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
-
-        $kuotaSakit = 14;
-        $sisaCutiSakit = max($kuotaSakit - $totalSakit, 0);
-
-        $cutiData[] = [
-            'user' => $user,
-            'sisa_cuti_tahunan' => $sisaCutiTahunan,
-            'sisa_cuti_sakit' => $sisaCutiSakit,
-        ];
+        return view('dashboard.all_cuti', compact('cutiData', 'tahun', 'bulan'));
     }
 
-    return view('dashboard.all_cuti', compact('cutiData'));
-}
+    // ===== CRUD USER =====
+    public function create_user()
+    {
+        $user = Auth::user();
+        if ($user->role !== 'admin') {
+            return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses halaman ini.');
+        }
+        $users = User::where('role', '!=', 'admin')->get();
+        return view('dashboard.create_user', compact('users'));
+    }
 
-    public function store_user(request $request)
+    public function store_user(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -99,13 +100,10 @@ class DashboardController extends Controller
             'golongan' => 'nullable|string|max:50',
             'tanggal_masuk' => 'nullable|date',
         ]);
-    
-        $ttdPath = null;
-        if ($request->hasFile('ttd')) {
-            $ttdPath = $request->file('ttd')->store('ttd', 'public');
-        }
-    
-        $user = User::create([
+
+        $ttdPath = $request->hasFile('ttd') ? $request->file('ttd')->store('ttd', 'public') : null;
+
+        User::create([
             'name' => $request->name,
             'nip' => $request->nip,
             'jabatan' => $request->jabatan,
@@ -120,20 +118,8 @@ class DashboardController extends Controller
             'golongan' => $request->golongan,
             'tanggal_masuk' => $request->tanggal_masuk,
         ]);
-    
-        return redirect()->back()->with('success', 'User berhasil dibuat!');    
-    }
 
-    public function create_user()
-    {
-        $user = Auth::user();
-        if ($user->role !== 'admin') {
-            return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses halaman ini.');
-        }else{
-            $users = User::where('role', '!=', 'admin')->get();
-            // dd($users);
-            return view('dashboard.create_user', compact('users') );
-        }
+        return redirect()->back()->with('success', 'User berhasil dibuat!');
     }
 
     public function getalluser()
@@ -141,96 +127,79 @@ class DashboardController extends Controller
         $user = Auth::user();
         if ($user->role !== 'admin') {
             return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses halaman ini.');
-        }else{
-            $users = User::all();
-            return view('dashboard.all_user', compact('users') );
         }
-        
+        $users = User::all();
+        return view('dashboard.all_user', compact('users'));
     }
 
-    //edit user
     public function edit_user($id)
     {
         $user = Auth::user();
         if ($user->role !== 'admin') {
             return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses halaman ini.');
-        }else{
-            $editUser = User::findOrFail($id);
-            $users = User::where('role', '!=', 'admin')->get();
-            return view('dashboard.cuti.edit_user', compact('editUser', 'users') );
         }
-        
-    }
-// update user
-public function update_user(Request $request, $id)
-{
-    $user = Auth::user();
-    if ($user->role !== 'admin') {
-        return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses halaman ini.');
+        $editUser = User::findOrFail($id);
+        $users = User::where('role', '!=', 'admin')->get();
+        return view('dashboard.cuti.edit_user', compact('editUser', 'users'));
     }
 
-    // validasi
-    $request->validate([
-        'name'          => 'required|string|max:255',
-        'nip'           => 'nullable|string|max:50',
-        'jabatan'       => 'required|string|max:100',
-        'role'          => 'required|string',
-        'atasan_id'     => 'nullable|exists:users,id',
-        'unit_kerja'    => 'nullable|string|max:100',
-        'no_telp'       => 'nullable|string|max:20',
-        'golongan'      => 'nullable|string|max:50',
-        'tanggal_masuk' => 'nullable|date',
-        'email'         => 'required|email|unique:users,email,' . $id,
-        'ttd'           => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        'status'        => 'required|in:0,1', // ✅ validasi status
-    ]);
+    public function update_user(Request $request, $id)
+    {
+        $user = Auth::user();
+        if ($user->role !== 'admin') {
+            return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses halaman ini.');
+        }
 
-    // ambil user
-    $editUser = User::findOrFail($id);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'nip' => 'nullable|string|max:50',
+            'jabatan' => 'required|string|max:100',
+            'role' => 'required|string',
+            'atasan_id' => 'nullable|exists:users,id',
+            'unit_kerja' => 'nullable|string|max:100',
+            'no_telp' => 'nullable|string|max:20',
+            'golongan' => 'nullable|string|max:50',
+            'tanggal_masuk' => 'nullable|date',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'ttd' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'status' => 'required|in:0,1',
+        ]);
 
-    // update field
-    $editUser->name          = $request->name;
-    $editUser->nip           = $request->nip;
-    $editUser->jabatan       = $request->jabatan;
-    $editUser->role          = $request->role;
-    $editUser->atasan_id     = $request->atasan_id;
-    $editUser->unit_kerja    = $request->unit_kerja;
-    $editUser->no_telp       = $request->no_telp;
-    $editUser->golongan      = $request->golongan;
-    $editUser->tanggal_masuk = $request->tanggal_masuk;
-    $editUser->email         = $request->email;
-    $editUser->status        = $request->status; // ✅ update status
+        $editUser = User::findOrFail($id);
 
-    // upload TTD kalau ada
-    if ($request->hasFile('ttd')) {
-        $path = $request->file('ttd')->store('ttd', 'public');
-        $editUser->ttd = $path;
+        $editUser->update([
+            'name' => $request->name,
+            'nip' => $request->nip,
+            'jabatan' => $request->jabatan,
+            'role' => $request->role,
+            'atasan_id' => $request->atasan_id,
+            'unit_kerja' => $request->unit_kerja,
+            'no_telp' => $request->no_telp,
+            'golongan' => $request->golongan,
+            'tanggal_masuk' => $request->tanggal_masuk,
+            'email' => $request->email,
+            'status' => $request->status,
+            'ttd_path' => $request->hasFile('ttd') ? $request->file('ttd')->store('ttd', 'public') : $editUser->ttd_path,
+        ]);
+
+        return redirect()->route('edit-user', $id)->with('success', 'Data user berhasil diperbarui.');
     }
 
-    $editUser->save();
+    public function update_user_password(Request $request, $id)
+    {
+        $user = Auth::user();
+        if ($user->role !== 'admin') {
+            return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses fitur ini.');
+        }
 
-    return redirect()->route('edit-user', $id)->with('success', 'Data user berhasil diperbarui.');
-}
+        $request->validate([
+            'password' => 'required|string|min:8|confirmed',
+        ]);
 
-public function update_user_password(Request $request, $id)
-{
-    $user = Auth::user();
-    if ($user->role !== 'admin') {
-        return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses fitur ini.');
+        $editUser = User::findOrFail($id);
+        $editUser->password = Hash::make($request->password);
+        $editUser->save();
+
+        return redirect()->route('edit-user', $id)->with('password_success', 'Password berhasil diperbarui.');
     }
-
-    $request->validate([
-        'password' => 'required|string|min:8|confirmed',
-    ]);
-
-    $editUser = User::findOrFail($id);
-    $editUser->password = Hash::make($request->password);
-    $editUser->save();
-
-    return redirect()->route('edit-user', $id)->with('password_success', 'Password berhasil diperbarui.');
-
-}
-
-
-
 }
