@@ -12,6 +12,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Exports\PengajuanCutiExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Events\CutiDisetujui;
+
 
 class PengajuanCutiController extends Controller
 {
@@ -65,8 +67,8 @@ class PengajuanCutiController extends Controller
                 ->whereYear('tanggal_mulai', now()->year)
                 ->sum(DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
 
-            $sisaCutiLalu = min($user->sisa_cuti_tahun_lalu ?? 0, 6);
-            $kuotaTahunan = $user->sisa_cuti_tahunan; + $sisaCutiLalu;
+            $sisaCutiLalu = min($user->sisa_cuti_tahunan_bulan_lalu ?? 0, 6);
+            $kuotaTahunan = $user->sisa_cuti_tahunan + $sisaCutiLalu;
 
             if (($totalTahunan + $hariCuti) > $kuotaTahunan) {
                 return back()->with('error', 'Kuota cuti tahunan Anda melebihi batas.');
@@ -236,6 +238,8 @@ class PengajuanCutiController extends Controller
                 $cuti->status = 'disetujui';
             }
             $cuti->save();
+
+            event(new CutiDisetujui($cuti));
 
             return redirect()->back()->with('success', 'Pengajuan cuti telah disetujui.');
     }
