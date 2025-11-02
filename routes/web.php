@@ -49,4 +49,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cuti/ketua-pengganti', [PengajuanCutiController::class, 'setKetuaPengganti'])->name('cuti.setKetuaPengganti');
     Route::get('/pengajuan-cuti/export', [PengajuanCutiController::class, 'export'])->name('pengajuan-cuti.export');
     Route::get('/cuti/export/{user_id}', [PengajuanCutiController::class, 'exportByUser'])->name('cuti.exportByUser');
+    // Form PLH Panitera & Sekretaris
+Route::middleware(['auth'])->group(function () {
+
+    // PLH Panitera
+    Route::get('/cuti/plh-panitera', [PengajuanCutiController::class, 'formPlhPanitera'])->name('plh.panitera.form');
+    Route::post('/cuti/plh-panitera', [PengajuanCutiController::class, 'setPlhPanitera'])->name('plh.panitera.set');
+
+    // PLH Sekretaris
+    Route::get('/cuti/plh-sekretaris', [PengajuanCutiController::class, 'formPlhSekretaris'])->name('plh.sekretaris.form');
+    Route::post('/cuti/plh-sekretaris', [PengajuanCutiController::class, 'setPlhSekretaris'])->name('plh.sekretaris.set');
+});
+
 });

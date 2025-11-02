@@ -141,7 +141,7 @@ if (in_array(auth()->user()->role, $rolesAtasan)) {
                 <a href="{{ route('cuti.formKetuaPengganti') }}"
                    class="flex items-center px-4 py-2 rounded-md transition duration-200
                    {{ $currentRoute == 'cuti.formKetuaPengganti' ? 'bg-red-700 font-semibold text-white' : 'text-red-100 hover:bg-red-800' }}">
-                    <i class="fas fa-user-shield mr-3"></i> Ganti Ketua
+                    <i class="fas fa-user-shield mr-3"></i> PLH
                 </a>
             </li>
         @endif

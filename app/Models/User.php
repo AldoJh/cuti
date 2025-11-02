@@ -2,20 +2,18 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
@@ -32,13 +30,18 @@ class User extends Authenticatable
         'tanggal_masuk',
         'sisa_cuti_sakit_bulan_lalu',
         'sisa_cuti_tahunan_bulan_lalu',
+        'sisa_cuti_tahunan',
+        'sisa_cuti_sakit',
         'status',
+        'is_ketua_pengganti',
+        'is_plh_panitera',       // PLH Panitera
+        'is_plh_sekretaris',     // PLH Sekretaris
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -46,7 +49,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
      * @return array<string, string>
      */
@@ -55,16 +58,57 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_ketua_pengganti' => 'boolean',
+            'is_plh_panitera' => 'boolean',
+            'is_plh_sekretaris' => 'boolean',
         ];
     }
 
+    /**
+     * Relasi ke atasan langsung
+     */
     public function atasan()
-{
-    return $this->belongsTo(User::class, 'atasan_id');
-}
+    {
+        return $this->belongsTo(User::class, 'atasan_id');
+    }
 
-public function pengajuanCuti()
-{
-    return $this->hasMany(\App\Models\pengajuan_cuti::class, 'user_id');
-}
+    /**
+     * Relasi ke bawahan
+     */
+    public function bawahan()
+    {
+        return $this->hasMany(User::class, 'atasan_id');
+    }
+
+    /**
+     * Relasi ke pengajuan cuti
+     */
+    public function pengajuanCuti()
+    {
+        return $this->hasMany(\App\Models\Pengajuan_Cuti::class, 'user_id');
+    }
+
+    /**
+     * Scope untuk Ketua
+     */
+    public function scopeKetua($query)
+    {
+        return $query->where('role', 'ketua');
+    }
+
+    /**
+     * Scope untuk Panitera
+     */
+    public function scopePanitera($query)
+    {
+        return $query->where('role', 'panitera');
+    }
+
+    /**
+     * Scope untuk Sekretaris
+     */
+    public function scopeSekretaris($query)
+    {
+        return $query->where('role', 'sekretaris');
+    }
 }

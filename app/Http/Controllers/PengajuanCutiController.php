@@ -127,29 +127,35 @@ class PengajuanCutiController extends Controller
             break;
     }
 
+
+
+
+
+    
+
     // 🔹 Tentukan approval flow
     $status = 'diajukan';
     $approval = $user->atasan_id ?? null;
+
     $ketua = User::where('role', 'ketua')->first();
+    $paniteraPLH = User::where('is_plh_panitera', true)->first();
+    $sekretarisPLH = User::where('is_plh_sekretaris', true)->first();
 
     if ($user->role === 'ketua') {
-        // Kalau ketua yang ajukan → langsung disetujui
         $status = 'disetujui';
         $approval = null;
-    } elseif ($user->atasan_id === $ketua?->id ) {
-        // Kalau user tidak punya atasan → cek ketua pengganti atau ketua asli
-        $ketuaPengganti = User::where('is_ketua_pengganti', true)->first();
-        $ketua = User::where('role', 'ketua')->first();
-    
-        if ($ketuaPengganti) {
-            $approval = $ketuaPengganti->id;
-        } else {
-            $approval = $ketua?->id;
-        }
+    } elseif ($user->role === 'panitera') {
+        $approval = $paniteraPLH?->id ?? $user->atasan_id;
+    } elseif ($user->role === 'sekretaris') {
+        $approval = $sekretarisPLH?->id ?? $user->atasan_id;
     } else {
-        // User punya atasan → approval ke atasan
         $approval = $user->atasan_id;
+        // jika atasan adalah ketua, periksa ketua pengganti
+        if ($approval === $ketua?->id) {
+            $approval = User::where('is_ketua_pengganti', true)->first()?->id ?? $ketua?->id;
+        }
     }
+
     
     $cuti = Pengajuan_Cuti::create([
         'user_id' => $user->id,
@@ -205,44 +211,52 @@ class PengajuanCutiController extends Controller
 
     public function approve($id)
     {
-            $cuti = Pengajuan_Cuti::findOrFail($id);
-            $user = auth()->user();
-            $ketua = User::where('role', 'ketua')->first();
+        $cuti = Pengajuan_Cuti::findOrFail($id);
+        $user = auth()->user();
+        $ketua = User::where('role', 'ketua')->first();
 
-            if ($cuti->current_approval_id != $user->id) {
-                return redirect()->back()->with('error', 'Anda tidak memiliki hak untuk menyetujui cuti ini.');
-            }
+        if ($cuti->current_approval_id != $user->id) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki hak untuk menyetujui cuti ini.');
+        }
 
-            if ($user->role === 'ketua' || $user->is_ketua_pengganti) {
-                // Kalau ketua yang approve -> final
-                $cuti->current_approval_id = null;
-                $cuti->status = 'disetujui';
-            } elseif ($user->atasan_id === $ketua?->id) {
-                $ketuaPengganti = User::where('is_ketua_pengganti', true)->first();
+        // ✅ Logika approval utama
+        if ($user->role === 'ketua' || $user->is_ketua_pengganti) {
+            // Ketua final approve
+            $cuti->current_approval_id = null;
+            $cuti->status = 'disetujui';
+        } elseif ($user->role === 'panitera' && $user->is_plh_panitera) {
+            // PLH Panitera → lanjut ke panitera asli atau langsung approve
+            $paniteraAsli = User::where('role', 'panitera')->first();
+            $cuti->current_approval_id = $paniteraAsli?->id ?? null; // jika panitera asli ada, lanjut ke dia
+            $cuti->status = $paniteraAsli ? 'disetujui_plh' : 'disetujui';
+        } elseif ($user->role === 'sekretaris' && $user->is_plh_sekretaris) {
+            // PLH Sekretaris → lanjut ke sekretaris asli atau langsung approve
+            $sekretarisAsli = User::where('role', 'sekretaris')->first();
+            $cuti->current_approval_id = $sekretarisAsli?->id ?? null;
+            $cuti->status = $sekretarisAsli ? 'disetujui_plh' : 'disetujui';
+        } elseif ($user->atasan_id === $ketua?->id) {
+            // User punya atasan yang langsung di bawah ketua
+            $ketuaPengganti = User::where('is_ketua_pengganti', true)->first();
 
-                if ($ketuaPengganti) {
-                    // Kalau ada ketua pengganti -> teruskan ke ketua pengganti
-                    $cuti->current_approval_id = $ketuaPengganti->id;
-                    $cuti->status = 'disetujui_atasan';
-                } else {
-                    // Kalau tidak ada ketua pengganti -> teruskan ke ketua asli
-                    $cuti->current_approval_id = $ketua?->id;
-                    $cuti->status = 'disetujui_atasan';
-                }
-                // Kalau masih ada atasan -> teruskan
-                // $cuti->current_approval_id = $user->atasan_id;
-                // $cuti->status = 'disetujui_atasan';
+            if ($ketuaPengganti) {
+                $cuti->current_approval_id = $ketuaPengganti->id;
+                $cuti->status = 'disetujui_atasan';
             } else {
-                // Kalau tidak ada atasan -> final
-                $cuti->current_approval_id = null;
-                $cuti->status = 'disetujui';
+                $cuti->current_approval_id = $ketua?->id;
+                $cuti->status = 'disetujui_atasan';
             }
-            $cuti->save();
+        } else {
+            // Atasan biasa → final approve
+            $cuti->current_approval_id = null;
+            $cuti->status = 'disetujui';
+        }
 
-            event(new CutiDisetujui($cuti));
+        $cuti->save();
+        event(new CutiDisetujui($cuti));
 
-            return redirect()->back()->with('success', 'Pengajuan cuti telah disetujui.');
+        return redirect()->back()->with('success', 'Pengajuan cuti telah disetujui.');
     }
+
 
     //reject function
     public function reject($id)
@@ -413,6 +427,40 @@ public function setKetuaPengganti(Request $request)
 
     return back()->with('success', $user->name . ' ditetapkan sebagai Ketua Pengganti.');
 }
+
+
+public function setPlhPanitera(Request $request)
+{
+    $auth = Auth::user();
+    if ($auth->role !== 'admin') abort(403);
+
+    $request->validate(['user_id' => 'required|exists:users,id']);
+
+    User::where('is_plh_panitera', true)->update(['is_plh_panitera' => false]);
+
+    $user = User::findOrFail($request->user_id);
+    $user->is_plh_panitera = true;
+    $user->save();
+
+    return back()->with('success', $user->name.' ditetapkan sebagai PLH Panitera.');
+}
+
+public function setPlhSekretaris(Request $request)
+{
+    $auth = Auth::user();
+    if ($auth->role !== 'admin') abort(403);
+
+    $request->validate(['user_id' => 'required|exists:users,id']);
+
+    User::where('is_plh_sekretaris', true)->update(['is_plh_sekretaris' => false]);
+
+    $user = User::findOrFail($request->user_id);
+    $user->is_plh_sekretaris = true;
+    $user->save();
+
+    return back()->with('success', $user->name.' ditetapkan sebagai PLH Sekretaris.');
+}
+
 
 
 public function formKetuaPengganti()
