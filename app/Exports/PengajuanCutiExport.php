@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\pengajuan_cuti;
+use App\Models\Pengajuan_Cuti;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
@@ -17,7 +17,7 @@ class PengajuanCutiExport implements FromCollection, WithHeadings
     public function __construct($cutis = null)
     {
         // Kalau tidak dikirim dari controller, ambil semua data default
-        $this->cutis = $cutis ?? pengajuan_cuti::with(['user', 'approval'])->get();
+        $this->cutis = $cutis ?? Pengajuan_Cuti::with(['user', 'approval'])->get();
     }
 
     public function collection()

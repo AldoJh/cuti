@@ -11,9 +11,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * Atribut yang bisa diisi mass-assignment.
      */
     protected $fillable = [
         'name',
@@ -34,14 +32,12 @@ class User extends Authenticatable
         'sisa_cuti_sakit',
         'status',
         'is_ketua_pengganti',
-        'is_plh_panitera',       // PLH Panitera
-        'is_plh_sekretaris',     // PLH Sekretaris
+        'is_plh_panitera',
+        'is_plh_sekretaris',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
+     * Atribut yang disembunyikan saat serialisasi.
      */
     protected $hidden = [
         'password',
@@ -49,9 +45,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Tipe data casting otomatis.
      */
     protected function casts(): array
     {
@@ -65,7 +59,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Relasi ke atasan langsung
+     * Relasi ke atasan langsung (self relation).
      */
     public function atasan()
     {
@@ -73,7 +67,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Relasi ke bawahan
+     * Relasi ke bawahan (self relation).
      */
     public function bawahan()
     {
@@ -81,7 +75,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Relasi ke pengajuan cuti
+     * Relasi ke tabel pengajuan cuti.
      */
     public function pengajuanCuti()
     {
@@ -89,7 +83,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Scope untuk Ketua
+     * Scope untuk Ketua.
      */
     public function scopeKetua($query)
     {
@@ -97,7 +91,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Scope untuk Panitera
+     * Scope untuk Panitera.
      */
     public function scopePanitera($query)
     {
@@ -105,10 +99,72 @@ class User extends Authenticatable
     }
 
     /**
-     * Scope untuk Sekretaris
+     * Scope untuk Sekretaris.
      */
     public function scopeSekretaris($query)
     {
         return $query->where('role', 'sekretaris');
+    }
+
+    /**
+     * 🔹 Fungsi untuk menentukan siapa yang harus menyetujui pengajuan cuti.
+     * 
+     * Logika:
+     * - Ketua → otomatis disetujui.
+     * - Panitera → PLH Panitera kalau ada, kalau tidak Ketua.
+     * - Sekretaris → PLH Sekretaris kalau ada, kalau tidak Ketua.
+     * - Pegawai biasa → atasan langsung, tapi kalau atasannya Ketua maka cek Ketua Pengganti.
+     */
+    
+    public function getActiveApprover()
+    {
+        // Jika user adalah Ketua → tidak perlu approval
+        if ($this->role === 'ketua' || $this->is_ketua_pengganti) {
+            return null;
+        }
+
+        // Ambil data pejabat struktural
+        $ketua = User::where('role', 'ketua')->first();
+        $ketuaPengganti = User::where('is_ketua_pengganti', true)->first();
+        $panitera = User::where('role', 'panitera')->first();
+        $plhPanitera = User::where('is_plh_panitera', true)->first();
+        $sekretaris = User::where('role', 'sekretaris')->first();
+        $plhSekretaris = User::where('is_plh_sekretaris', true)->first();
+
+        // 🔹 Jika user Panitera → lanjut ke Ketua / Ketua Pengganti
+        if ($this->role === 'panitera') {
+            return $ketuaPengganti?->id ?? $ketua?->id;
+        }
+
+        // 🔹 Jika user Sekretaris → lanjut ke Ketua / Ketua Pengganti
+        if ($this->role === 'sekretaris') {
+            return $ketuaPengganti?->id ?? $ketua?->id;
+        }
+
+        // 🔹 Jika user adalah PLH Panitera → lanjut ke Ketua / Ketua Pengganti
+        if ($this->is_plh_panitera) {
+            return $ketuaPengganti?->id ?? $ketua?->id;
+        }
+
+        // 🔹 Jika user adalah PLH Sekretaris → lanjut ke Ketua / Ketua Pengganti
+        if ($this->is_plh_sekretaris) {
+            return $ketuaPengganti?->id ?? $ketua?->id;
+        }
+
+        // 🔹 Jika pegawai biasa → tentukan atasan langsung
+        if ($this->atasan_id == $panitera?->id) {
+            return $plhPanitera?->id ?? $panitera?->id;
+        }
+
+        if ($this->atasan_id == $sekretaris?->id) {
+            return $plhSekretaris?->id ?? $sekretaris?->id;
+        }
+
+        if ($this->atasan_id == $ketua?->id) {
+            return $ketuaPengganti?->id ?? $ketua?->id;
+        }
+
+        // Default fallback
+        return $this->atasan_id;
     }
 }

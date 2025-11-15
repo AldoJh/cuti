@@ -16,53 +16,42 @@
 
     {{-- Tabel --}}
     <div class="overflow-x-auto bg-white rounded-xl shadow-lg border border-gray-200">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <table class="min-w-full divide-y divide-gray-200 text-sm table-auto">
             <thead class="bg-gradient-to-r from-orange-500 to-red-900 text-white">
                 <tr>
-                    <th class="px-3 py-3 text-center font-semibold">#</th>
-                    <th class="px-4 py-3 text-left font-semibold">Nama</th>
-                    <th class="px-4 py-3 text-left font-semibold">NIP</th>
-                    <th class="px-4 py-3 text-left font-semibold">Jabatan</th>
-                    <th class="px-4 py-3 text-center font-semibold">Role</th>
-                    <th class="px-4 py-3 text-left font-semibold">Atasan</th>
-                    <th class="px-4 py-3 text-left font-semibold">Email</th>
-                    <!-- <th class="px-4 py-3 text-center font-semibold">TTD</th> -->
-                    <th class="px-4 py-3 text-center font-semibold">Sisa Cuti Tahunan</th>
-                    <th class="px-4 py-3 text-center font-semibold">Sisa Cuti Sakit</th>
-                    <th class="px-4 py-3 text-center font-semibold">Status</th>
-                    <th class="px-4 py-3 text-center font-semibold">Aksi</th>
+                    <th class="px-3 py-3 text-center font-semibold w-[50px]">No</th>
+                    <th class="px-4 py-3 text-left font-semibold min-w-[220px]">Nama</th>
+                    <th class="px-4 py-3 text-left font-semibold min-w-[130px]">NIP</th>
+                    <th class="px-4 py-3 text-left font-semibold min-w-[200px]">Jabatan</th>
+                    <th class="px-4 py-3 text-center font-semibold min-w-[120px]">Role</th>
+                    <th class="px-4 py-3 text-left font-semibold min-w-[220px]">Atasan</th>
+                    <th class="px-4 py-3 text-left font-semibold min-w-[220px]">Email</th>
+                    <th class="px-4 py-3 text-center font-semibold min-w-[150px]">Sisa Cuti Tahunan</th>
+                    <th class="px-4 py-3 text-center font-semibold min-w-[140px]">Sisa Cuti Sakit</th>
+                    <th class="px-4 py-3 text-center font-semibold min-w-[120px]">Status</th>
+                    <th class="px-4 py-3 text-center font-semibold min-w-[200px]">Aksi</th>
                 </tr>
             </thead>
+
             <tbody class="divide-y divide-gray-100">
                 @forelse($users as $key => $u)
                 <tr class="hover:bg-orange-50 transition">
-                    <td class="px-3 py-2 text-center font-semibold">{{ $key+1 }}</td>
+                    <td class="px-3 py-2 text-center font-semibold">{{ $key + 1 }}</td>
                     <td class="px-4 py-2 font-medium text-gray-800">{{ $u->name }}</td>
                     <td class="px-4 py-2">{{ $u->nip ?? '-' }}</td>
                     <td class="px-4 py-2">{{ $u->jabatan ?? '-' }}</td>
                     <td class="px-4 py-2 text-center capitalize text-gray-700">{{ $u->role }}</td>
                     <td class="px-4 py-2">{{ $u->atasan?->name ?? '-' }}</td>
                     <td class="px-4 py-2">{{ $u->email }}</td>
-                    <!-- <td class="px-4 py-2 text-center">
-                        @if($u->ttd_path)
-                            <img src="{{ asset('storage/'.$u->ttd_path) }}" alt="TTD" class="h-10 mx-auto rounded shadow">
-                        @else
-                            <span class="text-gray-400 italic">Belum ada</span>
-                        @endif
-                    </td> -->
+
                     <td class="px-4 py-2 text-center text-green-600 font-semibold">{{ $u->sisa_cuti_tahunan ?? 0 }} hari</td>
                     <td class="px-4 py-2 text-center text-blue-600 font-semibold">{{ $u->sisa_cuti_sakit ?? 0 }} hari</td>
 
-                    {{-- 🔥 STATUS --}}
                     <td class="px-4 py-2 text-center">
                         @if($u->status == 1)
-                            <span class="px-3 py-1 text-sm rounded-lg bg-green-100 text-green-700 font-medium shadow">
-                                Aktif
-                            </span>
+                            <span class="px-3 py-1 text-sm rounded-lg bg-green-100 text-green-700 font-medium shadow">Aktif</span>
                         @else
-                            <span class="px-3 py-1 text-sm rounded-lg bg-red-100 text-red-700 font-medium shadow">
-                                Non Aktif
-                            </span>
+                            <span class="px-3 py-1 text-sm rounded-lg bg-red-100 text-red-700 font-medium shadow">Non Aktif</span>
                         @endif
                     </td>
 
@@ -89,6 +78,7 @@
                 </tr>
                 @endforelse
             </tbody>
+
         </table>
     </div>
 </div>

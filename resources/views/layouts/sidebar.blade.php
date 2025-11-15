@@ -5,24 +5,24 @@ $rolesAtasan = ['panitera', 'sekretaris', 'ketua', 'hakim'];
 $rolesAdmin = ['admin', 'superadmin'];
 $currentRoute = Route::currentRouteName();
 
-$notifPengajuan = 0;
+$user = auth()->user();
 
-if (in_array(auth()->user()->role, $rolesAtasan)) {
-    if (auth()->user()->role === 'ketua') {
-        // Ketua: ambil semua pengajuan yang sudah disetujui atasan
-        $notifPengajuan = pengajuan_cuti::where('status', 'disetujui_atasan')->count();
-    } else {
-        // Panitera & Sekretaris: status diajukan dari bawahannya
-        $notifPengajuan = pengajuan_cuti::where('status', 'diajukan')
-            ->whereHas('user', function ($q) {
-                $q->where('atasan_id', auth()->id());
-            })
-            ->count();
-    }
+// 🔹 Anggap PLH & Ketua Pengganti juga sebagai "atasan"
+$isAtasan = in_array($user->role, $rolesAtasan)
+    || $user->is_plh_panitera
+    || $user->is_plh_sekretaris
+    || $user->is_ketua_pengganti;
+
+// 🔹 Hitungan notifikasi berdasarkan current_approval_id (siapa yang benar-benar harus approve)
+$notifPengajuan = 0;
+if ($isAtasan) {
+    $notifPengajuan = Pengajuan_Cuti::where('current_approval_id', $user->id)
+        ->whereIn('status', ['diajukan', 'disetujui_atasan'])
+        ->count();
 }
 @endphp
 
-<!-- Tambahin animasi shake -->
+<!-- 🔹 Animasi notifikasi -->
 <style>
     @keyframes smooth-shake {
         0% { transform: translate(0, 0) rotate(0deg); }
@@ -38,32 +38,42 @@ if (in_array(auth()->user()->role, $rolesAtasan)) {
     }
 </style>
 
-<!-- Overlay untuk mobile -->
+<!-- Overlay untuk Mobile -->
 <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-50 hidden z-40 lg:hidden"></div>
 
-<!-- Sidebar -->
+<!-- 🔹 Sidebar -->
 <div id="sidebar"
      class="bg-[#992103] shadow-lg min-h-screen fixed lg:static left-0 top-0 w-64 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50 flex flex-col">
 
-    <!-- Logo & Title -->
+    <!-- Logo -->
     <div class="flex flex-col items-center p-6 border-b border-[#7a1a00]">
         <img src="{{ asset('images/logopnrm.png') }}" alt="Logo PN" class="w-16 mb-2">
         <h1 class="text-white font-bold text-lg tracking-wide">SIM-C | PN</h1>
     </div>
 
-    <!-- User Info -->
+    <!-- Info User -->
     <div class="flex items-center space-x-3 px-6 py-4 border-b border-[#7a1a00]">
         <div class="bg-[#7a1a00] text-white rounded-full w-10 h-10 flex items-center justify-center font-semibold">
-            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+            {{ strtoupper(substr($user->name, 0, 1)) }}
         </div>
         <div>
-            <p class="text-white font-medium">{{ auth()->user()->name }}</p>
-            <p class="text-red-200 text-xs capitalize">{{ auth()->user()->role }}</p>
+            <p class="text-white font-medium">{{ $user->name }}</p>
+            <p class="text-red-200 text-xs capitalize">
+                {{ $user->role }}
+                @if($user->is_plh_panitera)
+                    (PLH Panitera)
+                @elseif($user->is_plh_sekretaris)
+                    (PLH Sekretaris)
+                @elseif($user->is_ketua_pengganti)
+                    (Ketua Pengganti)
+                @endif
+            </p>
         </div>
     </div>
 
-    <!-- Sidebar Menu -->
+    <!-- 🔹 Menu Sidebar -->
     <ul class="mt-4 space-y-1 px-4 flex-1">
+
         <!-- Dashboard -->
         <li>
             <a href="{{ route('dashboard') }}"
@@ -73,8 +83,8 @@ if (in_array(auth()->user()->role, $rolesAtasan)) {
             </a>
         </li>
 
-        <!-- Menu untuk User Biasa -->
-        @if(!in_array(auth()->user()->role, $rolesAdmin))
+        <!-- 🔸 Menu User Biasa -->
+        @if(!in_array($user->role, $rolesAdmin))
             <li>
                 <a href="{{ route('cuti.create') }}"
                    class="flex items-center px-4 py-2 rounded-md transition duration-200
@@ -91,10 +101,10 @@ if (in_array(auth()->user()->role, $rolesAtasan)) {
             </li>
         @endif
 
-        <!-- Menu untuk Atasan -->
-        @if(in_array(auth()->user()->role, $rolesAtasan))
+        <!-- 🔸 Menu untuk Atasan, PLH, & Ketua Pengganti -->
+        @if($isAtasan)
             <li>
-                <a href="{{ route('cuti.pengajuan', auth()->id()) }}"
+                <a href="{{ route('cuti.pengajuan', $user->id) }}"
                    class="flex items-center px-4 py-2 rounded-md transition duration-200
                    {{ $currentRoute == 'cuti.pengajuan' ? 'bg-red-700 font-semibold text-white' : 'text-red-100 hover:bg-red-800' }}">
                     <i class="fas fa-inbox mr-3"></i> Pengajuan Masuk
@@ -107,8 +117,8 @@ if (in_array(auth()->user()->role, $rolesAtasan)) {
             </li>
         @endif
 
-        <!-- Menu untuk Admin -->
-        @if(in_array(auth()->user()->role, $rolesAdmin))
+        <!-- 🔸 Menu untuk Admin -->
+        @if(in_array($user->role, $rolesAdmin))
             <li>
                 <a href="{{ route('all_cuti') }}"
                    class="flex items-center px-4 py-2 rounded-md transition duration-200

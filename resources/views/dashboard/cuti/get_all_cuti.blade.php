@@ -25,7 +25,7 @@
                     <th class="px-4 py-3 text-left font-semibold">Jenis Cuti</th>
                     <th class="px-4 py-3 text-center font-semibold">Tanggal Mulai</th>
                     <th class="px-4 py-3 text-center font-semibold">Tanggal Selesai</th>
-                    <th class="px-4 py-3 text-left font-semibold">Approval</th>
+                    <!-- <th class="px-4 py-3 text-left font-semibold">Approval</th> -->
                     <th class="px-4 py-3 text-center font-semibold">Status</th>
                 </tr>
             </thead>
@@ -40,10 +40,10 @@
                     <td class="px-4 py-2 text-gray-700">{{ $cuti->jenis_cuti }}</td>
                     <td class="px-4 py-2 text-center">{{ $cuti->tanggal_mulai }}</td>
                     <td class="px-4 py-2 text-center">{{ $cuti->tanggal_selesai }}</td>
-                    <td class="px-4 py-2">
+                    <!-- <td class="px-4 py-2">
                         <span class="font-medium text-gray-900">{{ $cuti->approval->name ?? '' }}</span>
                         <span class="text-gray-500 text-sm">- {{ $cuti->approval->jabatan ?? '' }}</span>
-                    </td>
+                    </td> -->
                     <td class="px-4 py-2 text-center">
                         <span class="px-3 py-1 text-xs font-semibold rounded-full shadow-sm
                             @if($cuti->status === 'diajukan') bg-orange-100 text-orange-700 border border-orange-300
