@@ -196,15 +196,16 @@ class PengajuanCutiController extends Controller
     }
 
     /** Cetak form pengajuan cuti */
-    public function print_formcuti($id)
+        public function print_formcuti($id)
     {
         $cuti = Pengajuan_Cuti::findOrFail($id);
         $user = User::find($cuti->user_id);
         $atasan = User::find($user->atasan_id);
         $ketua = User::where('role', 'ketua')->first();
 
-        $showAtasan = $cuti->current_approval_id != $ketua?->id;
-        $showKetua = is_null($cuti->current_approval_id);
+        // LOGIKA TTD BARU
+        $showAtasan = in_array($cuti->status, ['disetujui_atasan', 'disetujui']);
+        $showKetua = $cuti->status === 'disetujui';
         $showUserTTD = true;
 
         return view('dashboard.cuti.print_formcuti', compact(
