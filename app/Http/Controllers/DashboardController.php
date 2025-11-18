@@ -95,7 +95,7 @@ class DashboardController extends Controller
             'name'                 => 'required|string|max:255',
             'nip'                  => 'nullable|string|max:50',
             'jabatan'              => 'nullable|string|max:100',
-            'role'                 => 'required|in:admin,ketua,hakim,panitera,panmud,panitera_pengganti,sekretaris,kasubbag,pegawai,ppnpn',
+            'role'                 => 'required|in:admin,ketua,wakil_ketua,hakim,panitera,panmud,panitera_pengganti,sekretaris,kasubbag,pegawai,ppnpn',
             'atasan_id'            => 'nullable|exists:users,id',
             'email'                => 'required|string|email|max:255|unique:users',
             'password'             => 'required|string|min:6|confirmed',
