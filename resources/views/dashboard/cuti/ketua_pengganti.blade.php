@@ -49,7 +49,7 @@
                        shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <option value="">— Pilih PLH Ketua —</option>
                 @foreach($users as $user)
-                    @if(in_array($user->role, ['ketua', 'hakim']))
+                    @if(in_array($user->role, ['ketua', 'wakil_ketua', 'hakim']))
                         <option value="{{ $user->id }}" {{ $user->is_ketua_pengganti ? 'selected' : '' }}>
                             {{ $user->name }} ({{ ucfirst($user->role) }})
                         </option>

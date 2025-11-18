@@ -59,6 +59,7 @@
                     class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
                     <option value="">-- Pilih Role --</option>
                     <option value="ketua">Ketua</option>
+                    <option value="wakil_ketua">Wakil Ketua</option>
                     <option value="hakim">Hakim</option>
                     <option value="panitera">Panitera</option>
                     <option value="panmud">Panitera Muda</option>
