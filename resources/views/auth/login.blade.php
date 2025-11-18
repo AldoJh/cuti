@@ -1,15 +1,35 @@
 @extends('layouts.auth')
 
 @section('title', 'Login - Aplikasi Cuti Pegawai')
-@section('body-class', 'min-h-screen flex items-center justify-center bg-gradient-to-br from-[#9c1f02] via-[#b12a07] to-[#6d1803] font-serif')
+
+{{-- Background: image + gradient overlay --}}
+@section('body-class', '
+    min-h-screen flex items-center justify-center 
+    bg-cover bg-center bg-no-repeat 
+    relative font-serif
+')
 
 @section('content')
+
+{{-- Background Image --}}
+<div class="absolute inset-0 -z-10">
+    <img 
+        src="{{ asset('images/gedungPN.webp') }}" 
+        class="w-full h-full object-cover"
+        alt="Background PN"
+    >
+</div>
+
+{{-- Gradient Overlay --}}
+<div class="absolute inset-0 bg-gradient-to-br from-[#9c1f02]/80 via-[#b12a07]/80 to-[#6d1803]/80 -z-0"></div>
+
+{{-- MAIN CARD LOGIN --}}
 <div
   class="flex flex-col md:flex-row w-full max-w-5xl mx-auto bg-white/95 shadow-2xl rounded-3xl overflow-hidden
          border border-yellow-500/50 transform transition-all duration-500 scale-95 md:scale-100
-         hover:scale-100 hover:shadow-[0_0_40px_rgba(255,215,0,0.5)] backdrop-blur-sm">
+         hover:scale-100 hover:shadow-[0_0_40px_rgba(255,215,0,0.5)] backdrop-blur-sm relative z-10">
 
-  <!-- BAGIAN KIRI: VECTOR + TEKS MOTIVASI -->
+  <!-- BAGIAN KIRI -->
   <div class="hidden md:flex flex-col items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-100 w-1/2 relative overflow-hidden">
     <img src="{{ asset('images/vector.png') }}" alt="Vector" 
          class="w-4/5 drop-shadow-2xl animate-float select-none mb-6">
@@ -17,22 +37,22 @@
     <div class="text-center text-gray-700 px-8">
       <h2 class="text-2xl font-bold mb-2 text-yellow-700">Efisien, Cepat, dan Transparan</h2>
       <p class="text-sm text-gray-600 italic leading-relaxed">
-        “Kelola pengajuan cuti Anda dengan mudah melalui sistem digital terintegrasi — 
+        “Kelola pengajuan cuti Anda dengan mudah melalui sistem digital terintegrasi —
         karena waktu Anda berharga.”
       </p>
     </div>
   </div>
 
-  <!-- BAGIAN KANAN: CARD LOGIN -->
+  <!-- BAGIAN KANAN -->
   <div class="w-full md:w-1/2 bg-white px-10 py-12 flex flex-col justify-center relative">
 
-    <!-- Logo di pojok kanan atas -->
+    <!-- Logo -->
     <div class="absolute top-5 right-5">
       <img src="{{ asset('images/logopn.jpg') }}" alt="Logo" 
            class="w-12 h-12 rounded-full shadow-md border border-yellow-400/50">
     </div>
 
-    <!-- Judul & Deskripsi -->
+    <!-- Judul -->
     <div class="text-center mb-8">
       <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight drop-shadow-sm">SIM-C</h1>
       <p class="text-gray-600 text-sm mt-1 font-sans">Sistem Informasi Manajemen Cuti</p>
@@ -89,9 +109,9 @@
                    transition duration-200 font-sans placeholder-gray-400"
             placeholder="Masukkan kata sandi">
 
-          <!-- Tombol show/hide password -->
+          <!-- Show/Hide -->
           <button type="button" onclick="togglePassword()"
-            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 focus:outline-none transition">
+            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 transition">
             <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
               <path id="eyePath"
                 d="M12 5c-7.633 0-11 7-11 7s3.367 7 11 7 11-7 11-7-3.367-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z" />
@@ -125,26 +145,23 @@
   </div>
 </div>
 
-<!-- ANIMASI -->
+{{-- ANIMASI --}}
 <style>
 @keyframes gradient-x {
   0%   { background-position: 0% 50%; }
   50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
-.animate-gradient-x {
-  animation: gradient-x 3s ease infinite;
-}
+.animate-gradient-x { animation: gradient-x 3s ease infinite; }
+
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-10px); }
 }
-.animate-float {
-  animation: float 4s ease-in-out infinite;
-}
+.animate-float { animation: float 4s ease-in-out infinite; }
 </style>
 
-<!-- SCRIPT SHOW/HIDE PASSWORD -->
+{{-- SCRIPT SHOW/HIDE PASSWORD --}}
 <script>
 function togglePassword() {
   const passwordInput = document.getElementById('password');
@@ -163,4 +180,5 @@ function togglePassword() {
   }
 }
 </script>
+
 @endsection
