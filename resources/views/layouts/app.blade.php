@@ -7,29 +7,30 @@
     @vite('resources/css/app.css')
 </head>
 <body class="bg-gray-100 text-gray-800">
-    <div class="flex min-h-screen">
 
-        {{-- Sidebar --}}
-        @include('layouts.sidebar')
+    {{-- Sidebar (fixed) --}}
+    @include('layouts.sidebar')
 
-        {{-- Main content --}}
-        <div class="flex-1 flex flex-col min-h-screen">
-            {{-- Navbar --}}
-            @include('layouts.navbar')
+    {{-- Navbar (fixed) --}}
+    @include('layouts.navbar')
 
-            {{-- Content --}}
-            <main class="flex-1 p-6 sm:p-8 lg:p-10">
-                @yield('content')
-            </main>
+    {{-- Content wrapper (scrollable + footer di bawah) --}}
+<div class="pt-16 lg:ml-64 min-h-screen flex flex-col">
 
-            {{-- Footer --}}
-            @include('layouts.footer')
-        </div>
+    {{-- area isi yang bisa scroll --}}
+    <div class="flex-1 overflow-y-auto p-6 sm:p-8 lg:p-10">
+        @yield('content')
     </div>
+
+    {{-- Footer selalu di bawah --}}
+    <footer class="bg-[#FF9900]  text-center text-sm text-gray-600">
+        @include('layouts.footer')
+    </footer>
+
+</div>
 
     @vite('resources/js/app.js')
 
-    {{-- Script Toggle Sidebar --}}
     <script>
         const sidebar = document.getElementById('sidebar');
         const hamburger = document.getElementById('hamburger');

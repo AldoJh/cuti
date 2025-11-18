@@ -43,7 +43,10 @@ if ($isAtasan) {
 
 <!-- 🔹 Sidebar -->
 <div id="sidebar"
-     class="bg-[#992103] shadow-lg min-h-screen fixed lg:static left-0 top-0 w-64 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50 flex flex-col">
+     class="bg-[#992103] shadow-lg min-h-screen fixed left-0 top-0 w-64
+            transform -translate-x-full lg:translate-x-0 transition-transform duration-300
+            z-50 flex flex-col">
+
 
     <!-- Logo -->
     <div class="flex flex-col items-center p-6 border-b border-[#7a1a00]">
