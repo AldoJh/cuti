@@ -1,100 +1,102 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="card border-0 shadow-sm p-4" 
-         style="max-width: 600px; width: 100%; border-radius: 16px; background: #fff;">
-        
+<div class="max-w-3xl mx-auto px-4 py-8">
+
+    <!-- Alert Sukses -->
+    @if(session('success'))
+        <div class="mb-5 rounded-xl bg-green-50 border border-green-200 text-green-700 px-4 py-3 text-sm flex justify-between items-center shadow-sm">
+            <div>
+                <strong class="font-semibold">Berhasil!</strong> {{ session('success') }}
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-green-600 hover:text-green-800">✕</button>
+        </div>
+    @endif
+
+    <!-- Alert Error -->
+    @if($errors->any())
+        <div class="mb-5 rounded-xl bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm flex justify-between items-center shadow-sm">
+            <div>
+                <strong class="font-semibold">Terjadi kesalahan!</strong> Periksa kembali input Anda.
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-red-600 hover:text-red-800">✕</button>
+        </div>
+    @endif
+
+    <!-- Card -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 border border-gray-100 relative">
+
         <!-- Header -->
-        <div class="mb-4 border-bottom pb-3">
-            <h5 class="fw-bold text-dark mb-1">Edit Sisa Cuti</h5>
-            <small class="text-muted">Formulir ini digunakan untuk memperbarui data cuti karyawan</small>
+        <div class="border-b border-gray-200 pb-4 mb-6">
+            <h2 class="text-xl font-bold text-gray-800">Edit Sisa Cuti Pegawai</h2>
+            <p class="text-gray-500 text-sm mt-1">Perbarui seluruh data sisa cuti dengan benar.</p>
         </div>
 
         <!-- Form -->
-        <form action="{{ route('updateCuti', $user->id) }}" method="POST">
+        <form action="{{ route('updateCuti', $user->id) }}" method="POST" class="space-y-6">
             @csrf
             @method('PUT')
 
-            <!-- Cuti Tahunan -->
-            <div class="mb-3">
-                <label for="sisa_cuti_tahunan" class="form-label fw-semibold">Sisa Cuti Tahunan</label>
-                <input type="number" 
-                       name="sisa_cuti_tahunan" 
-                       id="sisa_cuti_tahunan"
-                       class="form-control custom-input"
-                       value="{{ old('sisa_cuti_tahunan', $user->sisa_cuti_tahunan) }}" 
-                       placeholder="Masukkan jumlah hari">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                @php
+                    $fields = [
+                        'sisa_cuti_tahunan' => 'Sisa Cuti Tahunan',
+                        'sisa_cuti_sakit' => 'Sisa Cuti Sakit',
+                        'sisa_cuti_alasan_penting' => 'Sisa Cuti Alasan Penting',
+                        'sisa_cuti_besar' => 'Sisa Cuti Besar',
+                        'sisa_cuti_melahirkan' => 'Sisa Cuti Melahirkan',
+                        'sisa_cuti_cltn' => 'Sisa Cuti CLTN'
+                    ];
+                @endphp
+
+                @foreach ($fields as $key => $label)
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            {{ $label }} <span class="text-red-500">*</span>
+                        </label>
+
+                        <input 
+                            type="number"
+                            name="{{ $key }}"
+                            value="{{ old($key, $user->$key) }}"
+                            placeholder="Masukkan jumlah hari"
+                            class="w-full rounded-xl border @error($key) border-red-400 @else border-gray-300 @enderror 
+                                   px-4 py-2.5 text-sm shadow-sm bg-gray-50
+                                   focus:ring-2 focus:ring-red-400 focus:border-red-400 transition-all"
+                        >
+
+                        @error($key)
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                @endforeach
+
             </div>
 
-            <!-- Cuti Sakit -->
-            <div class="mb-4">
-                <label for="sisa_cuti_sakit" class="form-label fw-semibold">Sisa Cuti Sakit</label>
-                <input type="number" 
-                       name="sisa_cuti_sakit" 
-                       id="sisa_cuti_sakit"
-                       class="form-control custom-input"
-                       value="{{ old('sisa_cuti_sakit', $user->sisa_cuti_sakit) }}" 
-                       placeholder="Masukkan jumlah hari">
-            </div>
+            <!-- Keterangan -->
+            <p class="text-xs text-red-500 mt-2">* Semua data wajib diisi</p>
 
             <!-- Tombol -->
-            <div class="d-flex justify-content-end gap-2">
-                <a href="{{ url()->previous() }}" 
-                   class="btn-custom btn-secondary-custom">
-                    Batal
+            <div class="flex justify-between items-center pt-4">
+
+                <!-- Tombol Kembali (besar) -->
+                <a href="{{ route('get-all-user') }}"
+                   class="px-6 py-2.5 rounded-full text-sm font-medium border border-gray-300 bg-white 
+                          hover:bg-gray-100 transition shadow-sm">
+                    ← Kembali
                 </a>
-                <button type="submit" 
-                        class="btn-custom btn-danger-custom">
-                    Update
+
+                <!-- Tombol Simpan -->
+                <button type="submit"
+                    class="px-6 py-2.5 rounded-full text-sm font-medium text-white bg-red-600 
+                           hover:bg-red-700 shadow-md transition">
+                    Simpan Perubahan
                 </button>
+
             </div>
+
         </form>
     </div>
 </div>
-
-<!-- Custom CSS -->
-<style>
-    .custom-input {
-        border-radius: 10px;
-        border: 1px solid #dcdcdc;
-        padding: 10px 14px;
-        transition: border-color 0.25s ease, box-shadow 0.25s ease;
-    }
-    .custom-input:focus {
-        border-color: #dc3545;
-        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.15);
-    }
-
-    /* Style tombol */
-    .btn-custom {
-        display: inline-block;
-        font-weight: 500;
-        padding: 10px 28px;
-        font-size: 14px;
-        border-radius: 50px; /* bikin bulat */
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        text-decoration: none;
-        transition: all 0.25s ease-in-out;
-    }
-
-    .btn-secondary-custom {
-        background-color: #f1f1f1;
-        color: #444;
-        border: 1px solid #bbb;
-    }
-    .btn-secondary-custom:hover {
-        background-color: #e0e0e0;
-        border-color: #999;
-    }
-
-    .btn-danger-custom {
-        background-color: #e53935;
-        color: #fff;
-        border: none;
-    }
-    .btn-danger-custom:hover {
-        background-color: #c62828;
-    }
-</style>
 @endsection

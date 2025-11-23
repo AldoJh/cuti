@@ -304,14 +304,22 @@ class PengajuanCutiController extends Controller
     public function updateCuti(Request $request, $id)
     {
         $request->validate([
-            'sisa_cuti_tahunan' => 'required|integer|min:0',
-            'sisa_cuti_sakit'   => 'required|integer|min:0',
+            'sisa_cuti_tahunan'         => 'required|integer|min:0',
+            'sisa_cuti_sakit'           => 'required|integer|min:0',
+            'sisa_cuti_alasan_penting'  => 'required|integer|min:0',
+            'sisa_cuti_besar'           => 'required|integer|min:0',
+            'sisa_cuti_melahirkan'      => 'required|integer|min:0',
+            'sisa_cuti_cltn'            => 'required|integer|min:0',
         ]);
 
-        User::findOrFail($id)->update($request->only([
-            'sisa_cuti_tahunan',
-            'sisa_cuti_sakit'
-        ]));
+        User::findOrFail($id)->update([
+            'sisa_cuti_tahunan'        => $request->sisa_cuti_tahunan,
+            'sisa_cuti_sakit'          => $request->sisa_cuti_sakit,
+            'sisa_cuti_alasan_penting' => $request->sisa_cuti_alasan_penting,
+            'sisa_cuti_besar'          => $request->sisa_cuti_besar,
+            'sisa_cuti_melahirkan'     => $request->sisa_cuti_melahirkan,
+            'sisa_cuti_cltn'           => $request->sisa_cuti_cltn,
+        ]);
 
         return back()->with('success', 'Sisa cuti berhasil diperbarui.');
     }

@@ -82,7 +82,7 @@ class DashboardController extends Controller
     public function all_cuti()
     {
         $users = User::whereIn('role', [
-            'pegawai','ppnpn','atasan','hakim','panitera','panmud','panitera_pengganti','sekretaris','kasubbag','ketua'
+            'bakti','outsourcing','p3k','pelaksana','atasan','hakim','panitera','panmud','panitera_pengganti','sekretaris','kasubbag','wakil_ketua','ketua'
         ])->get();
 
         $cutiData = [];
@@ -125,20 +125,30 @@ class DashboardController extends Controller
             'name'                 => 'required|string|max:255',
             'nip'                  => 'nullable|string|max:50',
             'jabatan'              => 'nullable|string|max:100',
-            'role'                 => 'required|in:admin,ketua,wakil_ketua,hakim,panitera,panmud,panitera_pengganti,sekretaris,kasubbag,pegawai,ppnpn',
+            'role'                 => 'required|in:admin,ketua,wakil_ketua,hakim,panitera,panmud,panitera_pengganti,sekretaris,kasubbag,pelaksana,p3k,outsourcing,bakti',
             'atasan_id'            => 'nullable|exists:users,id',
             'email'                => 'required|string|email|max:255|unique:users',
             'password'             => 'required|string|min:6|confirmed',
+
             'ttd'                  => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+
             'unit_kerja'           => 'nullable|string|max:100',
             'no_telp'              => 'nullable|string|max:20',
             'golongan'             => 'nullable|string|max:50',
             'tanggal_masuk'        => 'nullable|date',
-            'sisa_cuti_tahunan'    => 'nullable|integer|min:0',
-            'sisa_cuti_sakit'      => 'nullable|integer|min:0',
+
+            // CUTI
+            'sisa_cuti_tahunan'        => 'nullable|integer|min:0',
+            'sisa_cuti_sakit'          => 'nullable|integer|min:0',
+            'sisa_cuti_alasan_penting' => 'nullable|integer|min:0',
+            'sisa_cuti_besar'          => 'nullable|integer|min:0',
+            'sisa_cuti_melahirkan'     => 'nullable|integer|min:0',
+            'sisa_cuti_cltn'           => 'nullable|integer|min:0',
         ]);
 
-        $ttdPath = $request->hasFile('ttd') ? $request->file('ttd')->store('ttd', 'public') : null;
+        $ttdPath = $request->hasFile('ttd')
+            ? $request->file('ttd')->store('ttd', 'public')
+            : null;
 
         $user = User::create([
             'name'                 => $request->name,
@@ -153,8 +163,14 @@ class DashboardController extends Controller
             'no_telp'              => $request->no_telp,
             'golongan'             => $request->golongan,
             'tanggal_masuk'        => $request->tanggal_masuk,
-            'sisa_cuti_tahunan'    => $request->sisa_cuti_tahunan ?? 12,
-            'sisa_cuti_sakit'      => $request->sisa_cuti_sakit ?? 14,
+
+            // Default cuti
+            'sisa_cuti_tahunan'        => $request->sisa_cuti_tahunan ?? 12,
+            'sisa_cuti_sakit'          => $request->sisa_cuti_sakit ?? 14,
+            'sisa_cuti_alasan_penting' => $request->sisa_cuti_alasan_penting ?? 30,
+            'sisa_cuti_besar'          => $request->sisa_cuti_besar ?? 90,
+            'sisa_cuti_melahirkan'     => $request->sisa_cuti_melahirkan ?? 90,
+            'sisa_cuti_cltn'           => $request->sisa_cuti_cltn ?? 36,
         ]);
 
         return redirect()->back()->with('success', 'User berhasil dibuat!');

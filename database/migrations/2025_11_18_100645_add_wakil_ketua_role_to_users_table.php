@@ -21,9 +21,11 @@ return new class extends Migration
             'panitera_pengganti',
             'sekretaris',
             'kasubbag',
-            'ppnpn',
-            'bakti'
-        ) DEFAULT 'ppnpn'");
+            'pelaksana',       
+            'p3k',
+            'outsourcing',
+            'bakti' 
+        ) DEFAULT 'p3k'");
     }
 
     /**
@@ -41,8 +43,10 @@ return new class extends Migration
             'panitera_pengganti',
             'sekretaris',
             'kasubbag',
-            'ppnpn',
-            'bakti'
-        ) DEFAULT 'ppnpn'");
+            'pelaksana',       
+            'p3k',
+            'outsourcing',
+            'bakti' 
+        ) DEFAULT 'p3k'");
     }
 };

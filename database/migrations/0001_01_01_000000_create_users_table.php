@@ -28,10 +28,12 @@ return new class extends Migration
                 'panmud',         
                 'panitera_pengganti', 
                 'sekretaris',     
-                'kasubbag',       
-                'ppnpn',
+                'kasubbag',
+                'pelaksana',       
+                'p3k',
+                'outsourcing',
                 'bakti'       
-            ])->default('ppnpn'); 
+            ])->default('p3k'); 
             $table->unsignedBigInteger('atasan_id')->nullable();
             $table->foreign('atasan_id')->references('id')->on('users')->onDelete('set null');
             $table->integer('sisa_cuti_sakit_bulan_lalu')->default(0);

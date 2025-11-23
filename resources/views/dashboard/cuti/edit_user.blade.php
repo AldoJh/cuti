@@ -75,7 +75,9 @@
                 <option value="panitera_pengganti" {{ $editUser->role == 'panitera_pengganti' ? 'selected' : '' }}>Panitera Pengganti</option>
                 <option value="sekretaris" {{ $editUser->role == 'sekretaris' ? 'selected' : '' }}>Sekretaris</option>
                 <option value="kasubbag" {{ $editUser->role == 'kasubbag' ? 'selected' : '' }}>Kasubbag</option>
-                <option value="ppnpn" {{ $editUser->role == 'ppnpn' ? 'selected' : '' }}>PPNPN</option>
+                <option value="pelaksana" {{ $editUser->role == 'pelaksana' ? 'selected' : '' }}>Pelaksana/Staff</option>
+                <option value="p3k" {{ $editUser->role == 'p3k' ? 'selected' : '' }}>P3K</option>
+                <option value="outsourcing" {{ $editUser->role == 'outsourcing' ? 'selected' : '' }}>Outsourcing</option>
                 <option value="bakti" {{ $editUser->role == 'bakti' ? 'selected' : '' }}>Bakti</option>
             </select>
         </div>
