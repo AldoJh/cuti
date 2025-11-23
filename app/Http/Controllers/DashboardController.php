@@ -12,71 +12,99 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    // Halaman dashboard user
     public function index()
     {
         $user = Auth::user();
         $tahunIni = Carbon::now()->year;
 
-        // Hitung total cuti tahunan yang sudah diambil tahun ini
-        $totalTahunan = Pengajuan_Cuti::where('user_id', $user->id)
-            ->where('jenis_cuti', 'tahunan')
-            ->whereYear('tanggal_mulai', $tahunIni)
-            ->sum(DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
+        // ==========================================
+        // Helper untuk menghitung hari cuti yang terpakai (untuk ditampilkan)
+        // ==========================================
+        $hitungHari = function ($jenis) use ($user, $tahunIni) {
+            return Pengajuan_Cuti::where('user_id', $user->id)
+                ->where('jenis_cuti', $jenis)
+                ->where('status', 'disetujui')
+                ->whereYear('tanggal_mulai', $tahunIni)
+                ->sum(DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
+        };
 
-        $kuotaTahunan = $user->sisa_cuti_tahunan ?? 12; // ambil dari user atau default 12
-        $sisaCutiTahunan = max($kuotaTahunan - $totalTahunan, 0);
+        // ==========================================
+        // CUTI TAHUNAN – Sisa diambil langsung dari database
+        // ==========================================
+        $hariTahunanTerpakai = $hitungHari('tahunan');
+        $sisaCutiTahunan = $user->sisa_cuti_tahunan; // SUDAH DIPOTONG OLEH LISTENER
 
-        // Hitung total cuti sakit yang sudah diambil tahun ini
-        $totalSakit = Pengajuan_Cuti::where('user_id', $user->id)
-            ->where('jenis_cuti', 'sakit')
-            ->whereYear('tanggal_mulai', $tahunIni)
-            ->sum(DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
+        // ==========================================
+        // CUTI SAKIT
+        // ==========================================
+        $hariSakitTerpakai = $hitungHari('sakit');
+        $sisaCutiSakit = $user->sisa_cuti_sakit;
 
-        $kuotaSakit = $user->sisa_cuti_sakit ?? 14; // ambil dari user atau default 14
-        $sisaCutiSakit = max($kuotaSakit - $totalSakit, 0);
+        // ==========================================
+        // CUTI TAMBAHAN: Alasan Penting, Besar, Melahirkan, CLTN
+        // ==========================================
+        $jenisCutiTambahan = [
+            'alasan_penting',
+            'besar',
+            'melahirkan',
+            'cltn',
+        ];
 
-        return view('dashboard.index', compact('user', 'sisaCutiTahunan', 'sisaCutiSakit'));
+        $cutiData = [];
+
+        foreach ($jenisCutiTambahan as $jenis) {
+            $hariDipakai = $hitungHari($jenis);
+
+            $cutiData[$jenis] = [
+                'pengajuan' => Pengajuan_Cuti::where('user_id', $user->id)
+                    ->where('jenis_cuti', $jenis)
+                    ->where('status', 'disetujui')
+                    ->count(),
+
+                'hari_dipakai' => $hariDipakai,
+
+                // sisa kuota dari database (SUDAH DI KURANGI LISTENER)
+                'sisa' => $user->{"sisa_cuti_$jenis"},
+            ];
+        }
+
+        return view('dashboard.index', compact(
+            'user',
+            'sisaCutiTahunan',
+            'sisaCutiSakit',
+            'cutiData'
+        ));
     }
 
-    // Halaman semua cuti
+    // ==================================================================
+    // HALAMAN SEMUA CUTI (Admin melihat semua user)
+    // ==================================================================
     public function all_cuti()
     {
         $users = User::whereIn('role', [
             'pegawai','ppnpn','atasan','hakim','panitera','panmud','panitera_pengganti','sekretaris','kasubbag','ketua'
         ])->get();
 
-        $tahunIni = Carbon::now()->year;
         $cutiData = [];
 
         foreach ($users as $user) {
-            $totalTahunan = Pengajuan_Cuti::where('user_id', $user->id)
-                ->where('jenis_cuti', 'tahunan')
-                ->whereYear('tanggal_mulai', $tahunIni)
-                ->sum(DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
-
-            $kuotaTahunan = $user->sisa_cuti_tahunan ?? 12;
-            $sisaCutiTahunan = max($kuotaTahunan - $totalTahunan, 0);
-
-            $totalSakit = Pengajuan_Cuti::where('user_id', $user->id)
-                ->where('jenis_cuti', 'sakit')
-                ->whereYear('tanggal_mulai', $tahunIni)
-                ->sum(DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
-
-            $kuotaSakit = $user->sisa_cuti_sakit ?? 14;
-            $sisaCutiSakit = max($kuotaSakit - $totalSakit, 0);
-
             $cutiData[] = [
                 'user' => $user,
-                'sisa_cuti_tahunan' => $sisaCutiTahunan,
-                'sisa_cuti_sakit' => $sisaCutiSakit,
+                'sisa_cuti_tahunan' => $user->sisa_cuti_tahunan,
+                'sisa_cuti_sakit' => $user->sisa_cuti_sakit,
+                'sisa_cuti_alasan_penting' => $user->sisa_cuti_alasan_penting ?? 0,
+                'sisa_cuti_besar'          => $user->sisa_cuti_besar ?? 0,
+                'sisa_cuti_melahirkan'     => $user->sisa_cuti_melahirkan ?? 0,
+                'sisa_cuti_cltn'           => $user->sisa_cuti_cltn ?? 0,
             ];
         }
 
         return view('dashboard.all_cuti', compact('cutiData'));
     }
 
+    // ==================================================================
     // Halaman create user
+    // ==================================================================
     public function create_user()
     {
         $user = Auth::user();
@@ -88,7 +116,9 @@ class DashboardController extends Controller
         return view('dashboard.create_user', compact('users'));
     }
 
+    // ==================================================================
     // Store user baru
+    // ==================================================================
     public function store_user(Request $request)
     {
         $request->validate([
@@ -130,7 +160,9 @@ class DashboardController extends Controller
         return redirect()->back()->with('success', 'User berhasil dibuat!');
     }
 
+    // ==================================================================
     // Halaman semua user
+    // ==================================================================
     public function getalluser()
     {
         $user = Auth::user();
@@ -142,7 +174,9 @@ class DashboardController extends Controller
         return view('dashboard.all_user', compact('users'));
     }
 
+    // ==================================================================
     // Edit user
+    // ==================================================================
     public function edit_user($id)
     {
         $user = Auth::user();
@@ -155,12 +189,14 @@ class DashboardController extends Controller
         return view('dashboard.cuti.edit_user', compact('editUser', 'users'));
     }
 
+    // ==================================================================
     // Update user
+    // ==================================================================
     public function update_user(Request $request, $id)
     {
         $user = Auth::user();
         if ($user->role !== 'admin') {
-            return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses halaman ini.');
+            return redirect()->back()->with('error', 'Hanya admin yang dapat mengakses fitur ini.');
         }
 
         $request->validate([
@@ -205,7 +241,9 @@ class DashboardController extends Controller
         return redirect()->route('edit-user', $id)->with('success', 'Data user berhasil diperbarui.');
     }
 
+    // ==================================================================
     // Update password user
+    // ==================================================================
     public function update_user_password(Request $request, $id)
     {
         $user = Auth::user();
@@ -224,3 +262,4 @@ class DashboardController extends Controller
         return redirect()->route('edit-user', $id)->with('password_success', 'Password berhasil diperbarui.');
     }
 }
+

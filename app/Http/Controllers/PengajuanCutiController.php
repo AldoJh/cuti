@@ -16,45 +16,88 @@ use App\Events\CutiDisetujui;
 
 class PengajuanCutiController extends Controller
 {
-    /** Menampilkan form pengajuan cuti */
+    /**
+     * Show create form
+     */
     public function create()
     {
         return view('dashboard.cuti.create');
     }
 
-    /** Simpan pengajuan cuti baru */
+    /**
+     * Store new cuti request
+     */
     public function store(Storepengajuan_cutiRequest $request)
     {
         $request->validate([
-            'jenis_cuti' => 'required|in:tahunan,sakit,alasan_penting,besar,melahirkan,cltn',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'alasan' => 'required|string',
-            'surat_sakit' => 'required_if:jenis_cuti,sakit|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'jenis_cuti'        => 'required|in:tahunan,sakit,alasan_penting,besar,melahirkan,cltn',
+            'tanggal_mulai'     => 'required|date',
+            'tanggal_selesai'   => 'required|date|after_or_equal:tanggal_mulai',
+            'alasan'            => 'required|string',
+            'surat_sakit'       => 'required_if:jenis_cuti,sakit|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
         $user = Auth::user();
-        $hariCuti = Carbon::parse($request->tanggal_selesai)
-            ->diffInDays(Carbon::parse($request->tanggal_mulai)) + 1;
+        $hariCuti = $this->hitungHariCuti($request);
 
-        // Upload surat jika ada
+        // Upload file surat sakit (jika ada)
         $suratPath = $request->hasFile('surat_sakit')
             ? $request->file('surat_sakit')->store('surat_cuti', 'public')
             : null;
 
-        /** 🔹 Validasi kuota cuti */
-        switch ($request->jenis_cuti) {
+        // Validasi kuota cuti berdasarkan jenisnya
+        $valid = $this->validateKuotaCuti($request->jenis_cuti, $hariCuti, $user, $request);
+
+        if ($valid !== true) {
+            return back()->with('error', $valid); // pesan error dari validator
+        }
+
+        // Menentukan alur persetujuan
+        $status     = $user->role === 'ketua' ? 'disetujui' : 'diajukan';
+        $approvalId = $user->getActiveApprover();
+
+        // Simpan ke database
+        Pengajuan_Cuti::create([
+            'user_id'             => $user->id,
+            'jenis_cuti'          => $request->jenis_cuti,
+            'tanggal_mulai'       => $request->tanggal_mulai,
+            'tanggal_selesai'     => $request->tanggal_selesai,
+            'alasan'              => $request->alasan,
+            'surat_sakit'         => $suratPath,
+            'current_approval_id' => $approvalId,
+            'status'              => $status,
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Pengajuan cuti berhasil diajukan.');
+    }
+
+    /**
+     * Helper: Hitung jumlah hari cuti
+     */
+    private function hitungHariCuti($request)
+    {
+        return Carbon::parse($request->tanggal_selesai)
+            ->diffInDays(Carbon::parse($request->tanggal_mulai)) + 1;
+    }
+
+    /**
+     * Helper: Validasi kuota cuti per jenis
+     */
+    private function validateKuotaCuti($jenis, $hariCuti, $user, $request)
+    {
+        switch ($jenis) {
+
             case 'tahunan':
                 $totalTahunan = Pengajuan_Cuti::where('user_id', $user->id)
                     ->where('jenis_cuti', 'tahunan')
                     ->whereYear('tanggal_mulai', now()->year)
                     ->sum(DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
 
-                $sisaCutiLalu = min($user->sisa_cuti_tahunan_bulan_lalu ?? 0, 6);
-                $kuotaTahunan = $user->sisa_cuti_tahunan + $sisaCutiLalu;
+                $sisaLalu  = min($user->sisa_cuti_tahunan_bulan_lalu ?? 0, 6);
+                $kuota     = $user->sisa_cuti_tahunan + $sisaLalu;
 
-                if (($totalTahunan + $hariCuti) > $kuotaTahunan) {
-                    return back()->with('error', 'Kuota cuti tahunan Anda melebihi batas.');
+                if ($totalTahunan + $hariCuti > $kuota) {
+                    return 'Kuota cuti tahunan Anda melebihi batas.';
                 }
                 break;
 
@@ -64,66 +107,59 @@ class PengajuanCutiController extends Controller
                     ->whereYear('tanggal_mulai', now()->year)
                     ->sum(DB::raw('DATEDIFF(tanggal_selesai, tanggal_mulai) + 1'));
 
-                if (($totalSakit + $hariCuti) > $user->sisa_cuti_sakit) {
-                    return back()->with('error', 'Kuota cuti sakit Anda melebihi batas.');
+                if ($totalSakit + $hariCuti > $user->sisa_cuti_sakit) {
+                    return 'Kuota cuti sakit Anda melebihi batas.';
                 }
                 break;
 
             case 'alasan_penting':
-                if ($hariCuti > 30) return back()->with('error', 'Cuti karena alasan penting maksimal 1 bulan.');
-                break;
+                return $hariCuti > 30
+                    ? 'Cuti alasan penting maksimal 1 bulan.'
+                    : true;
 
             case 'besar':
-                if ($hariCuti > 90) return back()->with('error', 'Cuti besar maksimal 3 bulan.');
+                if ($hariCuti > 90) return 'Cuti besar maksimal 3 bulan.';
 
-                $lastCutiBesar = Pengajuan_Cuti::where('user_id', $user->id)
+                $last = Pengajuan_Cuti::where('user_id', $user->id)
                     ->where('jenis_cuti', 'besar')
                     ->where('tanggal_mulai', '>=', now()->subYears(5))
                     ->exists();
 
-                if ($lastCutiBesar) {
-                    return back()->with('error', 'Cuti besar hanya dapat diambil sekali dalam 5 tahun.');
-                }
+                if ($last) return 'Cuti besar hanya dapat diambil sekali dalam 5 tahun.';
                 break;
 
             case 'melahirkan':
-                if ($hariCuti > 90) return back()->with('error', 'Cuti melahirkan maksimal 3 bulan.');
-                break;
+                return $hariCuti > 90
+                    ? 'Cuti melahirkan maksimal 3 bulan.'
+                    : true;
 
             case 'cltn':
-                if ($hariCuti > 1460) return back()->with('error', 'Cuti di luar tanggungan negara maksimal 3 tahun.');
-                break;
+                return $hariCuti > 1460
+                    ? 'CLTN maksimal 3 tahun.'
+                    : true;
         }
 
-        /** 🔹 Tentukan alur persetujuan */
-        $status = $user->role === 'ketua' ? 'disetujui' : 'diajukan';
-        $approval = $user->getActiveApprover();
-
-        /** 🔹 Simpan ke database */
-        Pengajuan_Cuti::create([
-            'user_id' => $user->id,
-            'jenis_cuti' => $request->jenis_cuti,
-            'tanggal_mulai' => $request->tanggal_mulai,
-            'tanggal_selesai' => $request->tanggal_selesai,
-            'alasan' => $request->alasan,
-            'surat_sakit' => $suratPath,
-            'current_approval_id' => $approval,
-            'status' => $status,
-        ]);
-
-        return redirect()->route('dashboard')->with('success', 'Pengajuan cuti berhasil diajukan.');
+        return true;
     }
 
-    /** Tampilkan daftar cuti milik user */
+    /**
+     * Show daftar cuti user
+     */
     public function show(Pengajuan_Cuti $pengajuan_cuti)
     {
-        $cuti = Pengajuan_Cuti::where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();
-        $user = Auth::user();
+        $cuti = Pengajuan_Cuti::where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        return view('dashboard.cuti.index', compact('cuti', 'user'));
+        return view('dashboard.cuti.index', [
+            'cuti' => $cuti,
+            'user' => Auth::user()
+        ]);
     }
 
-    /** Menyetujui pengajuan cuti */
+    /**
+     * Approve cuti
+     */
     public function approve($id)
     {
         $cuti = Pengajuan_Cuti::findOrFail($id);
@@ -133,44 +169,50 @@ class PengajuanCutiController extends Controller
             return back()->with('error', 'Anda tidak memiliki hak untuk menyetujui cuti ini.');
         }
 
-        // Tentukan atasan berikutnya
         $nextApproval = $user->getActiveApprover();
 
-        // Kalau dia ketua / ketua pengganti -> tahap akhir
+        // Ketua → persetujuan final
         if ($user->role === 'ketua' || $user->is_ketua_pengganti) {
             $cuti->update([
                 'status' => 'disetujui',
                 'current_approval_id' => null,
             ]);
-        } 
-        // Kalau ada atasan berikutnya
+            $cuti->refresh();
+        }
+        // Ada atasan berikutnya
         else if ($nextApproval) {
             $cuti->update([
                 'status' => 'disetujui_atasan',
                 'current_approval_id' => $nextApproval,
             ]);
-        } 
-        // Kalau tidak ada atasan lagi, auto setujui
+            $cuti->refresh();
+        }
+        // Tidak ada atasan → final
         else {
             $cuti->update([
                 'status' => 'disetujui',
                 'current_approval_id' => null,
             ]);
+            $cuti->refresh();
         }
 
-        event(new CutiDisetujui($cuti));
+        // Trigger event setelah refresh
+        if ($cuti->status === 'disetujui') {
+            event(new CutiDisetujui($cuti));
+        }
 
-        return redirect()->route('cuti.pengajuan', auth()->id())
-            ->with('success', 'Pengajuan cuti telah disetujui dan diteruskan ke atasan berikutnya.');
+        return redirect()->route('cuti.pengajuan', $user->id)
+            ->with('success', 'Pengajuan cuti telah disetujui.');
     }
 
-    /** Menolak pengajuan cuti */
+    /**
+     * Reject cuti
+     */
     public function reject($id)
     {
         $cuti = Pengajuan_Cuti::findOrFail($id);
-        $user = auth()->user();
 
-        if ($cuti->current_approval_id != $user->id) {
+        if ($cuti->current_approval_id != auth()->id()) {
             return back()->with('error', 'Anda tidak memiliki hak untuk menolak cuti ini.');
         }
 
@@ -182,152 +224,177 @@ class PengajuanCutiController extends Controller
         return back()->with('success', 'Pengajuan cuti telah ditolak.');
     }
 
-    /** Menampilkan daftar pengajuan cuti yang harus disetujui oleh user saat ini */
+    /**
+     * Show daftar pengajuan yang perlu disetujui user
+     */
     public function pengajuan($id)
     {
-        $user = auth()->user();
-        abort_if($user->id != $id, 403, 'Akses ditolak.');
+        abort_if(auth()->id() != $id, 403, 'Akses ditolak.');
 
-        $pengajuanCuti = Pengajuan_Cuti::where('current_approval_id', $user->id)
+        $pengajuanCuti = Pengajuan_Cuti::where('current_approval_id', $id)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('dashboard.cuti.pengajuan', compact('pengajuanCuti', 'user'));
+        return view('dashboard.cuti.pengajuan', compact('pengajuanCuti'));
     }
 
-    /** Cetak form pengajuan cuti */
-        public function print_formcuti($id)
+    /**
+     * Print form
+     */
+    public function print_formcuti($id)
     {
-        $cuti = Pengajuan_Cuti::findOrFail($id);
-        $user = User::find($cuti->user_id);
+        $cuti   = Pengajuan_Cuti::findOrFail($id);
+        $user   = User::find($cuti->user_id);
         $atasan = User::find($user->atasan_id);
-        $ketua = User::where('role', 'ketua')->first();
+        $ketua  = User::where('role', 'ketua')->first();
 
-        // LOGIKA TTD BARU
-        $showAtasan = in_array($cuti->status, ['disetujui_atasan', 'disetujui']);
-        $showKetua = $cuti->status === 'disetujui';
-        $showUserTTD = true;
-
-        return view('dashboard.cuti.print_formcuti', compact(
-            'cuti', 'user', 'atasan', 'ketua', 'showAtasan', 'showKetua', 'showUserTTD'
-        ));
+        return view('dashboard.cuti.print_formcuti', [
+            'cuti'        => $cuti,
+            'user'        => $user,
+            'atasan'      => $atasan,
+            'ketua'       => $ketua,
+            'showAtasan'  => in_array($cuti->status, ['disetujui_atasan', 'disetujui']),
+            'showKetua'   => $cuti->status === 'disetujui',
+            'showUserTTD' => true,
+        ]);
     }
 
-    /** Cetak surat izin cuti */
+    /**
+     * Print surat izin
+     */
     public function print_suratizin($id)
     {
-        $cuti = Pengajuan_Cuti::findOrFail($id);
-        $user = User::find($cuti->user_id);
-        $ketua = User::where('role', 'ketua')->first();
+        $cuti   = Pengajuan_Cuti::findOrFail($id);
+        $user   = User::find($cuti->user_id);
+        $ketua  = User::where('role', 'ketua')->first();
 
-        $showKetua = is_null($cuti->current_approval_id);
-        return view('dashboard.cuti.print_suratizin', compact('cuti', 'user', 'ketua', 'showKetua'));
+        return view('dashboard.cuti.print_suratizin', [
+            'cuti' => $cuti,
+            'user' => $user,
+            'ketua' => $ketua,
+            'showKetua' => is_null($cuti->current_approval_id),
+        ]);
     }
 
-    /** Menampilkan semua pengajuan cuti (khusus admin) */
+    /**
+     * Admin: lihat semua cuti
+     */
     public function allpengajuan()
     {
-        $user = auth()->user();
-        abort_if($user->role !== 'admin', 403, 'Akses ditolak.');
+        abort_if(auth()->user()->role !== 'admin', 403);
 
-        $cutis = Pengajuan_Cuti::orderBy('created_at', 'desc')->get();
-        return view('dashboard.cuti.get_all_cuti', compact('cutis', 'user'));
+        return view('dashboard.cuti.get_all_cuti', [
+            'cutis' => Pengajuan_Cuti::latest()->get(),
+        ]);
     }
 
-    /** Update sisa cuti user */
+    /**
+     * Form edit sisa cuti
+     */
     public function editcuti($id)
     {
-        $user = User::findOrFail($id);
-        return view('dashboard.cuti.edit_cuti', compact('user'));
+        return view('dashboard.cuti.edit_cuti', [
+            'user' => User::findOrFail($id)
+        ]);
     }
 
+    /**
+     * Update sisa cuti
+     */
     public function updateCuti(Request $request, $id)
     {
         $request->validate([
             'sisa_cuti_tahunan' => 'required|integer|min:0',
-            'sisa_cuti_sakit' => 'required|integer|min:0',
+            'sisa_cuti_sakit'   => 'required|integer|min:0',
         ]);
 
-        $user = User::findOrFail($id);
-        $user->update($request->only(['sisa_cuti_tahunan', 'sisa_cuti_sakit']));
+        User::findOrFail($id)->update($request->only([
+            'sisa_cuti_tahunan',
+            'sisa_cuti_sakit'
+        ]));
 
         return back()->with('success', 'Sisa cuti berhasil diperbarui.');
     }
 
-    /** Set ketua pengganti (admin) */
+    /**
+     * Admin: Set ketua pengganti
+     */
     public function setKetuaPengganti(Request $request)
     {
-        $auth = Auth::user();
-        abort_if($auth->role !== 'admin', 403);
+        abort_if(Auth::user()->role !== 'admin', 403);
 
         $request->validate(['user_id' => 'required|exists:users,id']);
+
         User::where('is_ketua_pengganti', true)->update(['is_ketua_pengganti' => false]);
+        User::find($request->user_id)->update(['is_ketua_pengganti' => true]);
 
-        $user = User::findOrFail($request->user_id);
-        $user->is_ketua_pengganti = true;
-        $user->save();
-
-        return back()->with('success', "{$user->name} ditetapkan sebagai Ketua Pengganti.");
+        return back()->with('success', 'Ketua pengganti diperbarui.');
     }
 
-    /** Set PLH Panitera */
+    /**
+     * Admin: Set PLH Panitera
+     */
     public function setPlhPanitera(Request $request)
     {
-        $auth = Auth::user();
-        abort_if($auth->role !== 'admin', 403);
+        abort_if(Auth::user()->role !== 'admin', 403);
 
         $request->validate(['user_id' => 'required|exists:users,id']);
+
         User::where('is_plh_panitera', true)->update(['is_plh_panitera' => false]);
+        User::find($request->user_id)->update(['is_plh_panitera' => true]);
 
-        $user = User::findOrFail($request->user_id);
-        $user->is_plh_panitera = true;
-        $user->save();
-
-        return back()->with('success', "{$user->name} ditetapkan sebagai PLH Panitera.");
+        return back()->with('success', 'PLH Panitera diperbarui.');
     }
 
-    /** Set PLH Sekretaris */
+    /**
+     * Admin: Set PLH Sekretaris
+     */
     public function setPlhSekretaris(Request $request)
     {
-        $auth = Auth::user();
-        abort_if($auth->role !== 'admin', 403);
+        abort_if(Auth::user()->role !== 'admin', 403);
 
         $request->validate(['user_id' => 'required|exists:users,id']);
+
         User::where('is_plh_sekretaris', true)->update(['is_plh_sekretaris' => false]);
+        User::find($request->user_id)->update(['is_plh_sekretaris' => true]);
 
-        $user = User::findOrFail($request->user_id);
-        $user->is_plh_sekretaris = true;
-        $user->save();
-
-        return back()->with('success', "{$user->name} ditetapkan sebagai PLH Sekretaris.");
+        return back()->with('success', 'PLH Sekretaris diperbarui.');
     }
 
-    /** Form untuk set ketua pengganti */
+    /**
+     * Form ketua pengganti
+     */
     public function formKetuaPengganti()
     {
-        $auth = Auth::user();
-        abort_if($auth->role !== 'admin', 403);
+        abort_if(Auth::user()->role !== 'admin', 403);
 
-        $users = User::where('role', '!=', 'admin')->get();
-        return view('dashboard.cuti.ketua_pengganti', compact('users'));
+        return view('dashboard.cuti.ketua_pengganti', [
+            'users' => User::where('role', '!=', 'admin')->get()
+        ]);
     }
 
-    /** Export semua data cuti */
+    /**
+     * Export all cuti
+     */
     public function export()
     {
         return Excel::download(new PengajuanCutiExport, 'pengajuan_cuti.xlsx');
     }
 
-    /** Export data cuti per user */
+    /**
+     * Export cuti by user
+     */
     public function exportByUser($user_id)
     {
         $user = User::find($user_id);
         if (!$user) return back()->with('error', 'User tidak ditemukan.');
 
         $cutis = Pengajuan_Cuti::where('user_id', $user_id)->get();
-        if ($cutis->isEmpty()) return back()->with('error', 'User ini belum memiliki data cuti.');
+        if ($cutis->isEmpty()) return back()->with('error', 'User belum memiliki data cuti.');
 
-        $filename = 'pengajuan_cuti_' . str_replace(' ', '_', strtolower($user->name)) . '.xlsx';
-        return Excel::download(new PengajuanCutiExport($cutis), $filename);
+        return Excel::download(
+            new PengajuanCutiExport($cutis),
+            'pengajuan_cuti_' . str_replace(' ', '_', strtolower($user->name)) . '.xlsx'
+        );
     }
 }

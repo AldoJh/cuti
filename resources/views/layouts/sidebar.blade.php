@@ -62,7 +62,7 @@ if ($isAtasan) {
         <div>
             <p class="text-white font-medium">{{ $user->name }}</p>
             <p class="text-red-200 text-xs capitalize">
-                {{ $user->role }}
+                {{ $user->jabatan }}
                 @if($user->is_plh_panitera)
                     (PLH Panitera)
                 @elseif($user->is_plh_sekretaris)
@@ -154,7 +154,7 @@ if ($isAtasan) {
                 <a href="{{ route('cuti.formKetuaPengganti') }}"
                    class="flex items-center px-4 py-2 rounded-md transition duration-200
                    {{ $currentRoute == 'cuti.formKetuaPengganti' ? 'bg-red-700 font-semibold text-white' : 'text-red-100 hover:bg-red-800' }}">
-                    <i class="fas fa-user-shield mr-3"></i> PLH
+                    <i class="fas fa-user-shield mr-3"></i> Pelaksanan Harian
                 </a>
             </li>
         @endif

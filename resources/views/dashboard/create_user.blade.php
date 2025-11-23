@@ -31,32 +31,39 @@
         @csrf
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
             {{-- Nama --}}
             <div>
-                <label for="name" class="block text-gray-700 font-medium mb-2">Nama</label>
-                <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">
+                    Nama <span class="text-red-600">*</span>
+                </label>
+                <input type="text" name="name" value="{{ old('name') }}" required
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
             </div>
 
             {{-- NIP --}}
             <div>
-                <label for="nip" class="block text-gray-700 font-medium mb-2">NIP</label>
-                <input type="text" name="nip" id="nip" value="{{ old('nip') }}"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">NIP</label>
+                <input type="text" name="nip" value="{{ old('nip') }}"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
             </div>
 
             {{-- Jabatan --}}
             <div>
-                <label for="jabatan" class="block text-gray-700 font-medium mb-2">Jabatan</label>
-                <input type="text" name="jabatan" id="jabatan" value="{{ old('jabatan') }}" required
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">
+                    Jabatan <span class="text-red-600">*</span>
+                </label>
+                <input type="text" name="jabatan" value="{{ old('jabatan') }}" required
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
             </div>
 
             {{-- Role --}}
             <div>
-                <label for="role" class="block text-gray-700 font-medium mb-2">Role</label>
-                <select name="role" id="role" required
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">
+                    Role <span class="text-red-600">*</span>
+                </label>
+                <select name="role" required
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
                     <option value="">-- Pilih Role --</option>
                     <option value="ketua">Ketua</option>
                     <option value="wakil_ketua">Wakil Ketua</option>
@@ -73,12 +80,12 @@
 
             {{-- Atasan --}}
             <div>
-                <label for="atasan_id" class="block text-gray-700 font-medium mb-2">Atasan</label>
-                <select name="atasan_id" id="atasan_id"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">Atasan</label>
+                <select name="atasan_id"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
                     <option value="">-- Pilih Atasan --</option>
                     @foreach($users as $atasan)
-                        <option value="{{ $atasan->id }}" {{ old('atasan_id') == $atasan->id ? 'selected' : '' }}>
+                        <option value="{{ $atasan->id }}">
                             {{ $atasan->name }} - {{ $atasan->jabatan }}
                         </option>
                     @endforeach
@@ -87,82 +94,121 @@
 
             {{-- Unit Kerja --}}
             <div>
-                <label for="unit_kerja" class="block text-gray-700 font-medium mb-2">Unit Kerja</label>
-                <input type="text" name="unit_kerja" id="unit_kerja" value="{{ old('unit_kerja') }}"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">Unit Kerja</label>
+                <input type="text" name="unit_kerja" value="{{ old('unit_kerja') }}"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
             </div>
 
             {{-- No Telp --}}
             <div>
-                <label for="no_telp" class="block text-gray-700 font-medium mb-2">No. Telepon</label>
-                <input type="text" name="no_telp" id="no_telp" value="{{ old('no_telp') }}"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">No. Telepon</label>
+                <input type="text" name="no_telp" value="{{ old('no_telp') }}"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
             </div>
 
             {{-- Golongan --}}
             <div>
-                <label for="golongan" class="block text-gray-700 font-medium mb-2">Golongan</label>
-                <input type="text" name="golongan" id="golongan" value="{{ old('golongan') }}"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">Golongan</label>
+                <input type="text" name="golongan" value="{{ old('golongan') }}"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
             </div>
 
             {{-- Tanggal Masuk --}}
             <div>
-                <label for="tanggal_masuk" class="block text-gray-700 font-medium mb-2">Tanggal Masuk</label>
-                <input type="date" name="tanggal_masuk" id="tanggal_masuk" value="{{ old('tanggal_masuk') }}"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">Tanggal Masuk</label>
+                <input type="date" name="tanggal_masuk" value="{{ old('tanggal_masuk') }}"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
             </div>
 
             {{-- Email --}}
             <div>
-                <label for="email" class="block text-gray-700 font-medium mb-2">Email</label>
-                <input type="email" name="email" id="email" value="{{ old('email') }}" required
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">
+                    Email <span class="text-red-600">*</span>
+                </label>
+                <input type="email" name="email" value="{{ old('email') }}" required
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
             </div>
 
             {{-- Sisa Cuti Tahunan --}}
             <div>
-                <label for="sisa_cuti_tahunan" class="block text-gray-700 font-medium mb-2">Sisa Cuti Tahunan</label>
-                <input type="number" name="sisa_cuti_tahunan" id="sisa_cuti_tahunan" value="{{ old('sisa_cuti_tahunan', 12) }}" min="0"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">Sisa Cuti Tahunan</label>
+                <input type="number" name="sisa_cuti_tahunan" value="{{ old('sisa_cuti_tahunan', 12) }}" min="0"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
             </div>
 
             {{-- Sisa Cuti Sakit --}}
             <div>
-                <label for="sisa_cuti_sakit" class="block text-gray-700 font-medium mb-2">Sisa Cuti Sakit</label>
-                <input type="number" name="sisa_cuti_sakit" id="sisa_cuti_sakit" value="{{ old('sisa_cuti_sakit', 14) }}" min="0"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">Sisa Cuti Sakit</label>
+                <input type="number" name="sisa_cuti_sakit" value="{{ old('sisa_cuti_sakit', 14) }}" min="0"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
             </div>
 
             {{-- Password --}}
             <div>
-                <label for="password" class="block text-gray-700 font-medium mb-2">Password</label>
-                <input type="password" name="password" id="password" required
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">
+                    Password <span class="text-red-600">*</span>
+                </label>
+                <input type="password" name="password" required
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
             </div>
 
             {{-- Konfirmasi Password --}}
             <div>
-                <label for="password_confirmation" class="block text-gray-700 font-medium mb-2">Konfirmasi Password</label>
-                <input type="password" name="password_confirmation" id="password_confirmation" required
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">
+                    Konfirmasi Password <span class="text-red-600">*</span>
+                </label>
+                <input type="password" name="password_confirmation" required
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
             </div>
 
             {{-- TTD --}}
             <div class="sm:col-span-2">
-                <label for="ttd" class="block text-gray-700 font-medium mb-2">Tanda Tangan (TTD)</label>
-                <input type="file" name="ttd" id="ttd" accept="image/*"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
+                <label class="block text-gray-700 font-medium mb-2">Tanda Tangan (TTD)</label>
+                <input type="file" id="ttdInput" name="ttd" accept="image/*"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
+
+                {{-- Preview TTD --}}
+                <div class="mt-4">
+                    <img id="ttdPreview" class="hidden w-40 border rounded-lg shadow-md">
+                </div>
             </div>
+
         </div>
+
+        {{-- Keterangan --}}
+        <p class="text-sm text-gray-600 mt-4">
+            <span class="text-red-600 font-bold">*</span> Kolom dengan tanda bintang wajib diisi.
+        </p>
 
         {{-- Tombol Simpan --}}
         <div class="mt-6 flex justify-end">
             <button type="submit"
-                class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition-all duration-200">
+                class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition-all">
                 Simpan
             </button>
         </div>
+
     </form>
 </div>
+
+{{-- JS Preview TTD --}}
+<script>
+document.getElementById('ttdInput').addEventListener('change', function(event) {
+    let preview = document.getElementById('ttdPreview');
+    let file = event.target.files[0];
+
+    if (file) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+        }
+        reader.readAsDataURL(file);
+    } else {
+        preview.classList.add('hidden');
+        preview.src = "";
+    }
+});
+</script>
+
 @endsection

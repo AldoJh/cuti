@@ -34,6 +34,10 @@ class User extends Authenticatable
         'is_ketua_pengganti',
         'is_plh_panitera',
         'is_plh_sekretaris',
+        'sisa_cuti_alasan_penting',
+        'sisa_cuti_besar',
+        'sisa_cuti_melahirkan',
+        'sisa_cuti_cltn',
     ];
 
     /**

@@ -10,24 +10,24 @@
 
         <div class="relative z-10">
             <h1 class="text-4xl font-extrabold tracking-tight drop-shadow-xl">
-                Pengaturan PLH Pimpinan & Unit
+                Pengaturan Pelaksana Harian
             </h1>
 
             <p class="text-lg mt-4 max-w-2xl mx-auto leading-relaxed opacity-95 font-light">
-                Kelola penunjukan PLH Ketua, Panitera, dan Sekretaris untuk memastikan layanan tetap berjalan
-                saat pejabat utama tidak aktif.
+                Kelola penunjukan Pelaksana Harian untuk Ketua, Panitera, dan Sekretaris 
+                guna memastikan pelayanan tetap berjalan saat pejabat utama tidak aktif.
             </p>
         </div>
     </div>
 
 
-    {{-- ===== Card PLH Ketua ===== --}}
+    {{-- ===== Card PH Ketua ===== --}}
     <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-gray-200/60 
                 p-10 transition-all duration-300 hover:shadow-3xl hover:-translate-y-1">
 
-        <h2 class="text-2xl font-semibold text-gray-900 text-center mb-2">Atur PLH Ketua</h2>
+        <h2 class="text-2xl font-semibold text-gray-900 text-center mb-2">Atur Pelaksana Harian Ketua</h2>
         <p class="text-gray-500 text-center mb-7 text-sm">
-            PLH Ketua menggantikan Ketua Pengadilan ketika pejabat utama tidak aktif.
+            Pelaksana Harian Ketua bertugas menggantikan Ketua Pengadilan saat tidak aktif.
         </p>
 
         {{-- Alerts --}}
@@ -47,11 +47,11 @@
             <select name="user_id" required
                 class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-gray-50 text-gray-800 text-center
                        shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <option value="">— Pilih PLH Ketua —</option>
+                <option value="">— Pilih Pelaksana Harian Ketua —</option>
                 @foreach($users as $user)
                     @if(in_array($user->role, ['ketua', 'wakil_ketua', 'hakim']))
                         <option value="{{ $user->id }}" {{ $user->is_ketua_pengganti ? 'selected' : '' }}>
-                            {{ $user->name }} ({{ ucfirst($user->role) }})
+                            {{ $user->name }} ({{ ucfirst($user->jabatan) }})
                         </option>
                     @endif
                 @endforeach
@@ -60,22 +60,22 @@
             <button type="submit"
                 class="w-full py-3 bg-indigo-600 text-white font-semibold rounded-2xl shadow-md
                        hover:bg-indigo-700 transition-all">
-                Simpan PLH Ketua
+                Simpan Pelaksana Harian Ketua
             </button>
         </form>
     </div>
 
 
 
-    {{-- ===== Grid PLH Panitera & Sekretaris ===== --}}
+    {{-- ===== Grid PH Panitera & Sekretaris ===== --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
 
-        {{-- ===== PLH Panitera ===== --}}
+        {{-- ===== Pelaksana Harian Panitera ===== --}}
         <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-gray-200/60 
                     p-8 transition-all duration-300 hover:shadow-3xl hover:-translate-y-1">
-            <h2 class="text-xl font-semibold text-gray-900 text-center mb-2">Atur PLH Panitera</h2>
+            <h2 class="text-xl font-semibold text-gray-900 text-center mb-2">Atur Pelaksana Harian Panitera</h2>
             <p class="text-gray-500 text-center mb-6 text-sm">
-                PLH Panitera menggantikan Panitera utama saat tidak aktif.
+                Pelaksana Harian Panitera menggantikan Panitera utama saat tidak aktif.
             </p>
 
             {{-- Alerts --}}
@@ -95,7 +95,7 @@
                 <select name="user_id" required
                     class="w-full border border-gray-300 rounded-2xl px-3 py-3 bg-gray-50 text-center 
                            shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
-                    <option value="">— Pilih PLH Panitera —</option>
+                    <option value="">— Pilih Pelaksana Harian Panitera —</option>
                     @foreach($users as $user)
                         @if(in_array($user->role, ['panitera', 'panmud']))
                             <option value="{{ $user->id }}" {{ $user->is_plh_panitera ? 'selected' : '' }}>
@@ -108,19 +108,19 @@
                 <button type="submit"
                     class="w-full py-3 bg-teal-600 text-white font-semibold rounded-2xl shadow-md
                            hover:bg-teal-700 transition-all">
-                    Simpan PLH Panitera
+                    Simpan Pelaksana Harian Panitera
                 </button>
             </form>
         </div>
 
 
 
-        {{-- ===== PLH Sekretaris ===== --}}
+        {{-- ===== Pelaksana Harian Sekretaris ===== --}}
         <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-gray-200/60 
                     p-8 transition-all duration-300 hover:shadow-3xl hover:-translate-y-1">
-            <h2 class="text-xl font-semibold text-gray-900 text-center mb-2">Atur PLH Sekretaris</h2>
+            <h2 class="text-xl font-semibold text-gray-900 text-center mb-2">Atur Pelaksana Harian Sekretaris</h2>
             <p class="text-gray-500 text-center mb-6 text-sm">
-                PLH Sekretaris menggantikan Sekretaris saat tidak aktif.
+                Pelaksana Harian Sekretaris menggantikan Sekretaris saat pejabat utama tidak aktif.
             </p>
 
             {{-- Alerts --}}
@@ -140,7 +140,7 @@
                 <select name="user_id" required
                     class="w-full border border-gray-300 rounded-2xl px-3 py-3 bg-gray-50 text-center 
                            shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
-                    <option value="">— Pilih PLH Sekretaris —</option>
+                    <option value="">— Pilih Pelaksana Harian Sekretaris —</option>
                     @foreach($users as $user)
                         @if(in_array($user->role, ['sekretaris', 'kasubbag']))
                             <option value="{{ $user->id }}" {{ $user->is_plh_sekretaris ? 'selected' : '' }}>
@@ -153,7 +153,7 @@
                 <button type="submit"
                     class="w-full py-3 bg-orange-500 text-white font-semibold rounded-2xl shadow-md
                            hover:bg-orange-600 transition-all">
-                    Simpan PLH Sekretaris
+                    Simpan Pelaksana Harian Sekretaris
                 </button>
             </form>
         </div>
