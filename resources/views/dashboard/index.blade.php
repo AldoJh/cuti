@@ -19,7 +19,7 @@
                 Selamat datang,
                 <span class="font-semibold underline decoration-yellow-300 decoration-4 underline-offset-4">
                     {{ Auth::user()->name }}
-                </span> 👋
+                </span>
             </p>
 
             <p class="text-red-100 text-sm mt-2">
@@ -30,7 +30,7 @@
         <div class="hidden sm:block">
             <img src="{{ asset('images/logopnrm.png') }}" 
                  alt="Logo PN" 
-                 class="w-24 h-24 drop-shadow-2xl rounded-full ring-4 ring-white/50 shadow-lg">
+                 class="w-24 h-24 drop-shadow-2xl rounded-full shadow-lg">
         </div>
     </div>
 

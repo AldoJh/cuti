@@ -14,7 +14,7 @@
             </p>
         </div>
         <img src="{{ asset('images/logopnrm.png') }}" alt="Logo PN"
-            class="w-14 h-14 drop-shadow-lg rounded-full ring-2 ring-white/50">
+            class="w-14 h-14 drop-shadow-lg rounded-full">
     </div>
 
     {{-- Card Detail --}}

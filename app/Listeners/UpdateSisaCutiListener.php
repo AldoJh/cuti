@@ -12,18 +12,38 @@ class UpdateSisaCutiListener
         $cuti = $event->cuti;
         $user = $cuti->user;
 
-        // Normalisasi tanggal supaya jam tidak mempengaruhi diff
         $mulai = Carbon::parse($cuti->tanggal_mulai)->startOfDay();
         $selesai = Carbon::parse($cuti->tanggal_selesai)->startOfDay();
 
-        // Hitung hari cuti secara akurat
         $lama = $mulai->diffInDays($selesai) + 1;
 
-        // Kurangi kuota sesuai jenis cuti
-        if ($cuti->jenis_cuti === 'tahunan') {
-            $user->sisa_cuti_tahunan = max(0, $user->sisa_cuti_tahunan - $lama);
-        } elseif ($cuti->jenis_cuti === 'sakit') {
-            $user->sisa_cuti_sakit = max(0, $user->sisa_cuti_sakit - $lama);
+        switch ($cuti->jenis_cuti) {
+            case 'tahunan':
+                $user->sisa_cuti_tahunan = max(0, ($user->sisa_cuti_tahunan ?? 0) - $lama);
+                break;
+
+            case 'sakit':
+                $user->sisa_cuti_sakit = max(0, ($user->sisa_cuti_sakit ?? 0) - $lama);
+                break;
+
+            case 'alasan_penting':
+                $user->sisa_cuti_alasan_penting = max(0, ($user->sisa_cuti_alasan_penting ?? 0) - $lama);
+                break;
+
+            case 'besar':
+                $user->sisa_cuti_besar = max(0, ($user->sisa_cuti_besar ?? 0) - $lama);
+                break;
+
+            case 'melahirkan':
+                $user->sisa_cuti_melahirkan = max(0, ($user->sisa_cuti_melahirkan ?? 0) - $lama);
+                break;
+
+            case 'cltn':
+                $user->sisa_cuti_cltn = max(0, ($user->sisa_cuti_cltn ?? 0) - $lama);
+                break;
+
+            default:
+                break;
         }
 
         $user->save();

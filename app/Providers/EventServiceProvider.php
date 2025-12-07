@@ -6,14 +6,10 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 
 class EventServiceProvider extends ServiceProvider
 {
-    protected $listen = [
-        \App\Events\CutiDisetujui::class => [
-            \App\Listeners\UpdateSisaCutiListener::class,
-        ],
-    ];
+    protected $listen = [];
 
     public function boot(): void
     {
-        //
+        parent::boot();
     }
 }

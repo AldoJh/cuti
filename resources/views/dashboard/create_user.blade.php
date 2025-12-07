@@ -43,7 +43,9 @@
 
             {{-- NIP --}}
             <div>
-                <label class="block text-gray-700 font-medium mb-2">NIP</label>
+                <label class="block text-gray-700 font-medium mb-2">
+                    NIP <span class="text-red-600">*</span>
+                </label>
                 <input type="text" name="nip" value="{{ old('nip') }}"
                     class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-400">
             </div>

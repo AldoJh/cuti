@@ -2,7 +2,6 @@
 
 @section('title', 'Login - Aplikasi Cuti Pegawai')
 
-{{-- Background: image + gradient overlay --}}
 @section('body-class', '
     min-h-screen flex items-center justify-center 
     bg-cover bg-center bg-no-repeat 
@@ -11,7 +10,6 @@
 
 @section('content')
 
-{{-- Background Image --}}
 <div class="absolute inset-0 -z-10">
     <img 
         src="{{ asset('images/gedungPN.webp') }}" 
@@ -20,16 +18,13 @@
     >
 </div>
 
-{{-- Gradient Overlay --}}
 <div class="absolute inset-0 bg-gradient-to-br from-[#9c1f02]/80 via-[#b12a07]/80 to-[#6d1803]/80 -z-0"></div>
 
-{{-- MAIN CARD LOGIN --}}
 <div
   class="flex flex-col md:flex-row w-full max-w-5xl mx-auto bg-white/95 shadow-2xl rounded-3xl overflow-hidden
          border border-yellow-500/50 transform transition-all duration-500 scale-95 md:scale-100
          hover:scale-100 hover:shadow-[0_0_40px_rgba(255,215,0,0.5)] backdrop-blur-sm relative z-10">
 
-  <!-- BAGIAN KIRI -->
   <div class="hidden md:flex flex-col items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-100 w-1/2 relative overflow-hidden">
     <img src="{{ asset('images/vector.png') }}" alt="Vector" 
          class="w-4/5 drop-shadow-2xl animate-float select-none mb-6">
@@ -43,33 +38,27 @@
     </div>
   </div>
 
-  <!-- BAGIAN KANAN -->
   <div class="w-full md:w-1/2 bg-white px-10 py-12 flex flex-col justify-center relative">
 
-    <!-- Logo -->
     <div class="absolute top-5 right-5">
       <img src="{{ asset('images/logopn.jpg') }}" alt="Logo" 
            class="w-12 h-12 rounded-full shadow-md border border-yellow-400/50">
     </div>
 
-    <!-- Judul -->
     <div class="text-center mb-8">
       <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight drop-shadow-sm">SIM-C</h1>
       <p class="text-gray-600 text-sm mt-1 font-sans">Sistem Informasi Manajemen Cuti</p>
       <div class="w-full h-[3px] bg-yellow-500 mx-auto mt-3 rounded-full"></div>
     </div>
 
-    <!-- Sambutan -->
     <div class="text-center mb-8">
       <h2 class="text-xl font-semibold text-gray-700">Selamat Datang Kembali</h2>
       <p class="text-gray-500 text-sm mt-1 font-sans">Masuk ke akun Anda untuk mengelola pengajuan cuti dan status persetujuan</p>
     </div>
 
-    <!-- FORM LOGIN -->
     <form method="POST" action="{{ route('login') }}" class="space-y-5">
       @csrf
 
-      <!-- Email/NIP -->
       <div>
         <label for="login" class="block text-gray-700 font-medium mb-1">Email atau NIP</label>
         <div class="relative">
@@ -91,7 +80,6 @@
         @enderror
       </div>
 
-      <!-- Password -->
       <div>
         <label for="password" class="block text-gray-700 font-medium mb-1">Kata Sandi</label>
         <div class="relative">
@@ -109,7 +97,6 @@
                    transition duration-200 font-sans placeholder-gray-400"
             placeholder="Masukkan kata sandi">
 
-          <!-- Show/Hide -->
           <button type="button" onclick="togglePassword()"
             class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 transition">
             <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -123,7 +110,6 @@
         @enderror
       </div>
 
-      <!-- Tombol Login -->
       <div class="pt-3">
         <button type="submit"
           class="w-full relative overflow-hidden text-white py-2.5 rounded-lg font-semibold shadow-lg
@@ -137,7 +123,6 @@
       </div>
     </form>
 
-    <!-- Footer kecil -->
     <div class="text-center text-gray-400 text-xs mt-10 select-none">
       <p>© {{ date('Y') }} SIM-C — Aplikasi Cuti Pegawai</p>
       <p class="text-[10px] italic mt-1">Pengadilan Negeri Lhokseumawe</p>
@@ -145,7 +130,6 @@
   </div>
 </div>
 
-{{-- ANIMASI --}}
 <style>
 @keyframes gradient-x {
   0%   { background-position: 0% 50%; }
@@ -161,7 +145,6 @@
 .animate-float { animation: float 4s ease-in-out infinite; }
 </style>
 
-{{-- SCRIPT SHOW/HIDE PASSWORD --}}
 <script>
 function togglePassword() {
   const passwordInput = document.getElementById('password');
